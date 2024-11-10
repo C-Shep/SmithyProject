@@ -37,7 +37,6 @@ public:
 
 	float width;
 	float girth;
-	float randHeight;
 
 	//Default Attributes
 	TArray<FVector> vertices;
