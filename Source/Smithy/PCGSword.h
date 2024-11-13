@@ -30,14 +30,19 @@ public:
 	//Size of the blade
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector bladeCubeRadius;
+	float width;
+	float girth;
+	float randHeight;
 
 	//Size of the guard
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector guardCubeRadius;
 
-	float width;
-	float girth;
-	float randHeight;
+	//Size of the grip
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector gripCubeRadius;
+
+
 
 	//Default Attributes
 	TArray<FVector> vertices;
@@ -62,6 +67,14 @@ public:
 	TArray<FVector2D> guardUvs;
 	TArray<FLinearColor> guardVertexColors;
 	TArray<FProcMeshTangent> guardTangents;
+
+	//Grip Attributes
+	TArray<FVector> gripVertices;
+	TArray<int> gripTriangles;
+	TArray<FVector> gripNormals;
+	TArray<FVector2D> gripUvs;
+	TArray<FLinearColor> gripVertexColors;
+	TArray<FProcMeshTangent> gripTangents;
 
 	void GenerateMesh();
 
