@@ -63,13 +63,13 @@ APCGSword::APCGSword()
 	/// --- Guard Attributes ---
 
 	//Width
-	float guardWidthMin = 10.f;//;randCubeSize;// +randCubeSize;// / 8;
-	float guardWidthMax = 10.f;//;randCubeSize;// +randCubeSize;// / 4;
+	float guardWidthMin = randCubeSize + (randCubeSize / 10);
+	float guardWidthMax = randCubeSize + (randCubeSize / 7);
 	float guardWidth = FMath::RandRange(guardWidthMin, guardWidthMax);
 
 	//Girth
-	float guardGirthMin = 10.f;// *8;
-	float guardGirthMax = 10.f;// *8;
+	float guardGirthMin = guardWidthMin / 8.f;
+	float guardGirthMax = guardWidthMax / 6.f;
 	float guardGirth = FMath::RandRange(guardWidthMin, guardWidthMax);
 
 	//Height
@@ -150,7 +150,7 @@ void APCGSword::GenerateMesh()
 
 	//Modify the guard
 	guard->SetRelativeScale3D(FVector(girth * 5, width, 1.f));
-	guard->SetWorldLocation(blade->GetComponentLocation() - (FVector(0.f,0.f,randHeight/2)));
+	guard->SetWorldLocation(blade->GetComponentLocation() - (FVector(0.f,0.f, bladeCubeRadius.Z)));
 	
 }
 

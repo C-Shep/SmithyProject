@@ -41,7 +41,7 @@ APCGSword::APCGSword()
 	//Height
 	float heightMin = 25.f;
 	float heightMax = 200.f;
-	float randHeight = FMath::RandRange(heightMin, heightMax);
+	randHeight = FMath::RandRange(heightMin, heightMax);
 
 	//Set size of cube to be the randomized parameters
 	bladeCubeRadius = FVector(randCubeSize, randCubeSize, randHeight);
@@ -60,8 +60,24 @@ APCGSword::APCGSword()
 	float girthMax = width - (width / 4); //WE GOTS A MAGIC NUMBA HERE BAWSS!!! (wait does this even count as a magic number?)
 	girth = FMath::RandRange(girthMin, girthMax);
 
-	//Guard
-	guardCubeRadius = FVector(50.f,50.f,50.f);
+	/// --- Guard Attributes ---
+
+	//Width
+	float guardWidthMin = 10.f;//;randCubeSize;// +randCubeSize;// / 8;
+	float guardWidthMax = 10.f;//;randCubeSize;// +randCubeSize;// / 4;
+	float guardWidth = FMath::RandRange(guardWidthMin, guardWidthMax);
+
+	//Girth
+	float guardGirthMin = 10.f;// *8;
+	float guardGirthMax = 10.f;// *8;
+	float guardGirth = FMath::RandRange(guardWidthMin, guardWidthMax);
+
+	//Height
+	float guardHeightMin = 3.f;
+	float guardHeightMax = 4.f;
+	float guardHeight = FMath::RandRange(guardHeightMin, guardHeightMax);
+
+	guardCubeRadius = FVector(guardWidth, guardGirth, guardHeight);
 }
 
 // Called when the game starts or when spawned
@@ -130,7 +146,12 @@ void APCGSword::GenerateMesh()
 
 	//Modify the Blade's Transform to look... uh... blade-like
 	blade->SetWorldRotation(FRotator(0.f, 90.f,0.f));
-	blade->SetRelativeScale3D(FVector(girth, width, 1));
+	blade->SetRelativeScale3D(FVector(girth, width, 1.f));
+
+	//Modify the guard
+	guard->SetRelativeScale3D(FVector(girth * 5, width, 1.f));
+	guard->SetWorldLocation(blade->GetComponentLocation() - (FVector(0.f,0.f,randHeight/2)));
+	
 }
 
 void APCGSword::GenerateBlade()
