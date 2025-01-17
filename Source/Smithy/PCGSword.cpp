@@ -92,8 +92,8 @@ APCGSword::APCGSword()
 	float gripWidth = FMath::RandRange(gripWidthMin, gripWidthMax);
 
 	//Girth
-	float gripGirthMin = gripWidthMin - (gripWidthMin / 3.f);
-	float gripGirthMax = gripWidthMin - (gripWidthMin / 6.f);
+	float gripGirthMin = gripWidthMin - (gripWidthMin / 2.f);
+	float gripGirthMax = gripWidthMin - (gripWidthMin / 2.f);
 	float gripGirth = FMath::RandRange(gripWidthMin, gripWidthMax);
 
 	//Height
@@ -101,7 +101,7 @@ APCGSword::APCGSword()
 	float gripHeightMax = randHeight / 4;
 	float gripHeight = FMath::RandRange(gripHeightMin, gripHeightMax);
 
-	gripCubeRadius = FVector(gripWidth, gripGirth, gripHeight);
+	gripCubeRadius = FVector(gripGirth, gripGirth, gripHeight);
 }
 
 // Called when the game starts or when spawned
@@ -172,16 +172,16 @@ void APCGSword::GenerateMesh()
 	grip->CreateMeshSection_LinearColor(0, gripVertices, gripTriangles, gripNormals, gripUvs, gripVertexColors, gripTangents, true);
 
 	//Modify the Blade's Transform to look... uh... blade-like
-	blade->SetWorldRotation(FRotator(0.f, 90.f,0.f));
+	blade->SetWorldRotation(FRotator(0.f, 90.f,0.f));	//comment this properly bro
 	blade->SetRelativeScale3D(FVector(girth, width, 1.f));
 
 	//Modify the guard
-	guard->SetRelativeScale3D(FVector(girth * 5, width, 1.f));
+	guard->SetRelativeScale3D(FVector(girth * 5, width, 1.f));	//magic number, ill fix this later
 	guard->SetWorldLocation(blade->GetComponentLocation() - (FVector(0.f,0.f, bladeCubeRadius.Z)));
 
 	//Modify the grip
-	grip->SetRelativeScale3D(FVector(girth, width, 1.f));
-	grip->SetWorldLocation(blade->GetComponentLocation() - (FVector(0.f, 0.f, bladeCubeRadius.Z + gripCubeRadius.Z)));
+	grip->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
+	grip->SetWorldLocation(blade->GetComponentLocation() - (FVector(0.f, 0.f, bladeCubeRadius.Z + guardCubeRadius.Z + gripCubeRadius.Z)));
 	
 }
 

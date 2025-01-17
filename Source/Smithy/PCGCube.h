@@ -28,7 +28,6 @@ public:
 	virtual void PostLoad() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-
 	//Size of the blade
 	FVector cubeRadius;
 
