@@ -20,13 +20,13 @@ APCGSword::APCGSword()
 	grip = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("GripMesh"));
 
 	blade->SetupAttachment(sceneComponent);
-	blade->SetRelativeLocation(blade->GetComponentLocation());
+	blade->SetRelativeLocation(sceneComponent->GetComponentLocation());
 
-	guard->SetupAttachment(sceneComponent);
+	guard->SetupAttachment(blade);
 	guard->SetRelativeLocation(blade->GetComponentLocation());
 
-	grip->SetupAttachment(sceneComponent);
-	grip->SetRelativeLocation(blade->GetComponentLocation());
+	grip->SetupAttachment(guard);
+	grip->SetRelativeLocation(guard->GetComponentLocation());
 	
 	//cook physics stuff
 	blade->bUseAsyncCooking = true;
@@ -38,70 +38,6 @@ APCGSword::APCGSword()
 	//Y = forward and back	(Girth)
 	//Z = height			(Height)
 
-	//Size of the cube at base
-	float cubeSizeMin = 5.f;
-	float cubeSizeMax = 50.f;
-	float randCubeSize = FMath::RandRange(cubeSizeMin, cubeSizeMax);
-
-	//Height
-	float heightMin = 25.f;
-	float heightMax = 200.f;
-	randHeight = FMath::RandRange(heightMin, heightMax);
-
-	//Set size of cube to be the randomized parameters
-	bladeCubeRadius = FVector(randCubeSize, randCubeSize, randHeight);
-
-	/// --- Width and Girth for later use after mesh construction, its just here for consistensy sake ---
-
-	//Width
-	//Set random width for use later after the cube is created
-	float widthMin = 0.2f;
-	float widthMax = 1.5f;
-	width = FMath::RandRange(widthMin, widthMax);
-
-	//Girth
-	//Set random girth for use later after the cube is created
-	float girthMin = widthMin;
-	float girthMax = width - (width / 4); //WE GOTS A MAGIC NUMBA HERE BAWSS!!! (wait does this even count as a magic number?)
-	girth = FMath::RandRange(girthMin, girthMax);
-
-	/// --- Guard Attributes ---
-
-	//Width
-	float guardWidthMin = randCubeSize + (randCubeSize / 10);
-	float guardWidthMax = randCubeSize + (randCubeSize / 7);
-	float guardWidth = FMath::RandRange(guardWidthMin, guardWidthMax);
-
-	//Girth
-	float guardGirthMin = guardWidthMin / 8.f;
-	float guardGirthMax = guardWidthMax / 6.f;
-	float guardGirth = FMath::RandRange(guardWidthMin, guardWidthMax);
-
-	//Height
-	float guardHeightMin = 3.f;
-	float guardHeightMax = 4.f;
-	float guardHeight = FMath::RandRange(guardHeightMin, guardHeightMax);
-
-	guardCubeRadius = FVector(guardWidth, guardGirth, guardHeight);
-
-	/// --- Grip Attributes ---
-
-	//Width
-	float gripWidthMin = 7;//randCubeSize - (randCubeSize / 2);
-	float gripWidthMax = 15;//randCubeSize - (randCubeSize / 4);
-	float gripWidth = FMath::RandRange(gripWidthMin, gripWidthMax);
-
-	//Girth
-	float gripGirthMin = gripWidthMin - (gripWidthMin / 2.f);
-	float gripGirthMax = gripWidthMin - (gripWidthMin / 2.f);
-	float gripGirth = FMath::RandRange(gripWidthMin, gripWidthMax);
-
-	//Height
-	float gripHeightMin = randHeight / 8;
-	float gripHeightMax = randHeight / 4;
-	float gripHeight = FMath::RandRange(gripHeightMin, gripHeightMax);
-
-	gripCubeRadius = FVector(gripGirth, gripGirth, gripHeight);
 }
 
 // Called when the game starts or when spawned
@@ -128,9 +64,7 @@ void APCGSword::PostLoad()
 void APCGSword::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
-
 
 void APCGSword::MeshReset()
 {
@@ -155,34 +89,120 @@ void APCGSword::MeshReset()
 	guardUvs.Reset();
 	guardVertexColors.Reset();
 	guardTangents.Reset();*/
+
+	gripVertices.Reset();
+	gripTriangles.Reset();
+	gripNormals.Reset();
+	gripUvs.Reset();
+	gripVertexColors.Reset();
+	gripTangents.Reset();
 }
 
 void APCGSword::GenerateMesh()
 {
 	MeshReset();
 
+	//Size of the cube at base
+	float cubeSizeMin = 5.f;
+	float cubeSizeMax = 50.f;
+	float randCubeSize = FMath::RandRange(cubeSizeMin, cubeSizeMax);
+
+	//Height
+	float heightMin = 25.f;
+	float heightMax = 200.f;
+	randHeight = FMath::RandRange(heightMin, heightMax);
+
+	//Set size of cube to be the randomized parameters
+	bladeCubeRadius = FVector(randCubeSize, randCubeSize, randHeight);
+
+	/// --------------------- Width and Girth for later use after mesh construction, its just here for consistensy sake ---------------------
+
+	//Width
+	//Set random width for use later after the cube is created
+	float widthMin = 0.2f;
+	float widthMax = 1.3f;
+	width = FMath::RandRange(widthMin, widthMax);
+
+	//Girth
+	//Set random girth for use later after the cube is created
+	float girthMin = widthMin;
+	float girthMax = width - (width / 4); //WE GOTS A MAGIC NUMBA HERE BAWSS!!! (wait does this even count as a magic number?)
+	girth = FMath::RandRange(girthMin, girthMax);
+
+	/// --------------------- Guard Attributes ---------------------
+
+	//Guard Width
+	float guardWidthMin = randCubeSize + (randCubeSize / 7);
+	float guardWidthMax = randCubeSize + (randCubeSize / 5);
+	float guardWidth = FMath::RandRange(guardWidthMin, guardWidthMax);
+
+	//Girth Girth
+	float guardGirthMin = randCubeSize + (guardWidthMin / 4.f);
+	float guardGirthMax = randCubeSize + (guardWidthMax / 2.f);
+	float guardGirth = FMath::RandRange(guardWidthMin, guardWidthMax);
+
+	//Height
+	float guardHeightMin = 3.f;
+	float guardHeightMax = 4.f;
+	float guardHeight = FMath::RandRange(guardHeightMin, guardHeightMax);
+
+	guardCubeRadius = FVector(guardWidth, guardGirth, guardHeight);
+
+	/// --------------------- Grip Attributes ---------------------
+
+	//Width
+	float gripWidthMin = 5;//randCubeSize - (randCubeSize / 2);
+	float gripWidthMax = 5;// 15;//randCubeSize - (randCubeSize / 4);
+	float gripWidth = 5;// FMath::RandRange(gripWidthMin, gripWidthMax);
+
+	//Height
+	float gripHeightMin = 10;// randHeight / 8;
+	float gripHeightMax = 10;// randHeight / 4;
+	float gripHeight = 20;// FMath::RandRange(gripHeightMin, gripHeightMax);
+
+	gripCubeRadius = FVector(gripWidth, gripWidth, gripHeight);
+
+
 	//Fill the mesh variables with mesh data
 	GenerateBlade();
-	GenerateGuard();
-	GenerateGrip();
+
 
 	//Create the actual mesh from the multiple quad meshes
-	blade->CreateMeshSection_LinearColor(0, bladeVertices, bladeTriangles, bladeNormals, bladeUvs, bladeVertexColors, bladeTangents, true);
-	guard->CreateMeshSection_LinearColor(0, guardVertices, guardTriangles, guardNormals, guardUvs, guardVertexColors, guardTangents, true);
-	grip->CreateMeshSection_LinearColor(0, gripVertices, gripTriangles, gripNormals, gripUvs, gripVertexColors, gripTangents, true);
 
 	//Modify the Blade's Transform to look... uh... blade-like
+	blade->CreateMeshSection_LinearColor(0, bladeVertices, bladeTriangles, bladeNormals, bladeUvs, bladeVertexColors, bladeTangents, true);
+
 	blade->SetWorldRotation(FRotator(0.f, 90.f,0.f));	//comment this properly bro
 	blade->SetRelativeScale3D(FVector(girth, width, 1.f));
 
-	//Modify the guard
-	guard->SetRelativeScale3D(FVector(girth * 5, width, 1.f));	//magic number, ill fix this later
-	guard->SetWorldLocation(blade->GetComponentLocation() - (FVector(0.f,0.f, bladeCubeRadius.Z)));
+	//Generate Guard Mesh, Modify it
+	GenerateGuard();
 
-	//Modify the grip
-	grip->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
-	grip->SetWorldLocation(blade->GetComponentLocation() - (FVector(0.f, 0.f, bladeCubeRadius.Z + guardCubeRadius.Z + gripCubeRadius.Z)));
+	guard->CreateMeshSection_LinearColor(0, guardVertices, guardTriangles, guardNormals, guardUvs, guardVertexColors, guardTangents, true);
+
+	//clamp size of guard. girth to 0.6 as it should be smaller, width to 0.8 as it should be longer. - These are magic number and should be changed
+	float guardGirthMulti = girth;
+	if (guardGirthMulti < 0.6)
+	{
+		guardGirthMulti = 0.6;
+	}
+
+	float guardWidthMulti = width;
+	if (guardWidthMulti < 0.8)
+	{
+		guardWidthMulti = 0.8;
+	}
 	
+	guard->SetRelativeScale3D(FVector(guardGirthMulti * 3, guardWidthMulti * 2, 1.f));	//magic number, ill fix this later
+	guard->SetWorldLocation(blade->GetComponentLocation() - (FVector(0.f,0.f, (bladeCubeRadius.Z + guardCubeRadius.Z))));
+
+	//Generate Grip Mesh, Modify it
+	GenerateGrip();
+	
+	grip->CreateMeshSection_LinearColor(0, gripVertices, gripTriangles, gripNormals, gripUvs, gripVertexColors, gripTangents, true);
+	
+	//grip->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
+	grip->SetWorldLocation(guard->GetComponentLocation() - (FVector(0.f, 0.f, (guardCubeRadius.Z + gripCubeRadius.Z))));
 }
 
 void APCGSword::GenerateBlade()
@@ -291,43 +311,43 @@ void APCGSword::GenerateGrip()
 {
 	MeshReset();
 
-	int32 triangleIndexCount = 0;
-	FVector definedShape[8];
-	FProcMeshTangent tangentSetup;
+	int32 gripTriangleIndexCount = 0;
+	FVector gripDefinedShape[8];
+	FProcMeshTangent gripTangentSetup;
 
-	definedShape[0] = FVector(-gripCubeRadius.X, gripCubeRadius.Y, gripCubeRadius.Z);	//Forward Top Right
-	definedShape[1] = FVector(-gripCubeRadius.X, gripCubeRadius.Y, -gripCubeRadius.Z);	//Forward Bottom Right
-	definedShape[2] = FVector(-gripCubeRadius.X, -gripCubeRadius.Y, gripCubeRadius.Z);	//Forward Top Left
-	definedShape[3] = FVector(-gripCubeRadius.X, -gripCubeRadius.Y, -gripCubeRadius.Z);	//Forward Bottom Left
+	gripDefinedShape[0] = FVector(-gripCubeRadius.X, gripCubeRadius.Y, gripCubeRadius.Z);	//Forward Top Right
+	gripDefinedShape[1] = FVector(-gripCubeRadius.X, gripCubeRadius.Y, -gripCubeRadius.Z);	//Forward Bottom Right
+	gripDefinedShape[2] = FVector(-gripCubeRadius.X, -gripCubeRadius.Y, gripCubeRadius.Z);	//Forward Top Left
+	gripDefinedShape[3] = FVector(-gripCubeRadius.X, -gripCubeRadius.Y, -gripCubeRadius.Z);	//Forward Bottom Left
 
-	definedShape[4] = FVector(gripCubeRadius.X, -gripCubeRadius.Y, gripCubeRadius.Z);	//Reverse Top Right
-	definedShape[5] = FVector(gripCubeRadius.X, -gripCubeRadius.Y, -gripCubeRadius.Z);	//Reverse Bottom Right
-	definedShape[6] = FVector(gripCubeRadius.X, gripCubeRadius.Y, gripCubeRadius.Z);		//Reverse Top Left
-	definedShape[7] = FVector(gripCubeRadius.X, gripCubeRadius.Y, -gripCubeRadius.Z);	//Reverse Bottom Left
+	gripDefinedShape[4] = FVector(gripCubeRadius.X, -gripCubeRadius.Y, gripCubeRadius.Z);	//Reverse Top Right
+	gripDefinedShape[5] = FVector(gripCubeRadius.X, -gripCubeRadius.Y, -gripCubeRadius.Z);	//Reverse Bottom Right
+	gripDefinedShape[6] = FVector(gripCubeRadius.X, gripCubeRadius.Y, gripCubeRadius.Z);		//Reverse Top Left
+	gripDefinedShape[7] = FVector(gripCubeRadius.X, gripCubeRadius.Y, -gripCubeRadius.Z);	//Reverse Bottom Left
 
 	//Front
-	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
-	AddQuadMesh(definedShape[0], definedShape[1], definedShape[2], definedShape[3], triangleIndexCount, tangentSetup);
+	gripTangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
+	AddQuadMesh(gripDefinedShape[0], gripDefinedShape[1], gripDefinedShape[2], gripDefinedShape[3], gripTriangleIndexCount, gripTangentSetup);
 
 	//Left
-	tangentSetup = FProcMeshTangent(1.f, 0.0f, 0.0f);
-	AddQuadMesh(definedShape[2], definedShape[3], definedShape[4], definedShape[5], triangleIndexCount, tangentSetup);
+	gripTangentSetup = FProcMeshTangent(1.f, 0.0f, 0.0f);
+	AddQuadMesh(gripDefinedShape[2], gripDefinedShape[3], gripDefinedShape[4], gripDefinedShape[5], gripTriangleIndexCount, gripTangentSetup);
 
 	//Back
-	tangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
-	AddQuadMesh(definedShape[4], definedShape[5], definedShape[6], definedShape[7], triangleIndexCount, tangentSetup);
+	gripTangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
+	AddQuadMesh(gripDefinedShape[4], gripDefinedShape[5], gripDefinedShape[6], gripDefinedShape[7], gripTriangleIndexCount, gripTangentSetup);
 
 	//Right
-	tangentSetup = FProcMeshTangent(-1.f, 0.0f, 0.0f);
-	AddQuadMesh(definedShape[6], definedShape[7], definedShape[0], definedShape[1], triangleIndexCount, tangentSetup);
+	gripTangentSetup = FProcMeshTangent(-1.f, 0.0f, 0.0f);
+	AddQuadMesh(gripDefinedShape[6], gripDefinedShape[7], gripDefinedShape[0], gripDefinedShape[1], gripTriangleIndexCount, gripTangentSetup);
 
 	//Top
-	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
-	AddQuadMesh(definedShape[6], definedShape[0], definedShape[4], definedShape[2], triangleIndexCount, tangentSetup);
+	gripTangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
+	AddQuadMesh(gripDefinedShape[6], gripDefinedShape[0], gripDefinedShape[4], gripDefinedShape[2], gripTriangleIndexCount, gripTangentSetup);
 
 	//Bottom
-	tangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
-	AddQuadMesh(definedShape[1], definedShape[7], definedShape[3], definedShape[5], triangleIndexCount, tangentSetup);
+	gripTangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
+	AddQuadMesh(gripDefinedShape[1], gripDefinedShape[7], gripDefinedShape[3], gripDefinedShape[5], gripTriangleIndexCount, gripTangentSetup);
 
 	gripVertices = vertices;
 	gripTriangles = triangles;

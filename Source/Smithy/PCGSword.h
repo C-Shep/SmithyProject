@@ -42,8 +42,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector gripCubeRadius;
 
-
-
 	//Default Attributes
 	TArray<FVector> vertices;
 	TArray<int> triangles;
@@ -76,6 +74,7 @@ public:
 	TArray<FLinearColor> gripVertexColors;
 	TArray<FProcMeshTangent> gripTangents;
 
+	//Generate each section of the sword, somewhat of a main function
 	void GenerateMesh();
 
 	void MeshReset();
