@@ -6,17 +6,6 @@
 // Sets default values
 APCGSword::APCGSword()
 {
-	//TO DO LIST
-	//Proper randomisation of guard
-	//Proper randomisation of grip
-	//Add pommel
-	//Tips of swords
-	//Different blade types, single edged, curved
-	//Different guard types, curved, ornate, spiked
-	//Different grip types, spear-like, round, ornate
-	//Different pommel types, different shapes/designs
-
-
 	//srand(time(NULL));
 
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -180,13 +169,13 @@ void APCGSword::GenerateMesh()
 
 	//Create the actual mesh from the multiple quad meshes
 
-	//------------------------------ Modify the Blade's Transform to look... uh... blade-like ------------------------------
+	//Modify the Blade's Transform to look... uh... blade-like
 	blade->CreateMeshSection_LinearColor(0, bladeVertices, bladeTriangles, bladeNormals, bladeUvs, bladeVertexColors, bladeTangents, true);
 
 	blade->SetWorldRotation(FRotator(0.f, 90.f,0.f));	//comment this properly bro
 	blade->SetRelativeScale3D(FVector(girth, width, 1.f));
 
-	//------------------------------ Generate Guard Mesh, Modify it ------------------------------
+	//Generate Guard Mesh, Modify it
 	GenerateGuard();
 
 	guard->CreateMeshSection_LinearColor(0, guardVertices, guardTriangles, guardNormals, guardUvs, guardVertexColors, guardTangents, true);
@@ -207,12 +196,12 @@ void APCGSword::GenerateMesh()
 	guard->SetRelativeScale3D(FVector(guardGirthMulti * 3, guardWidthMulti * 2, 1.f));	//magic number, ill fix this later
 	guard->SetWorldLocation(blade->GetComponentLocation() - (FVector(0.f,0.f, (bladeCubeRadius.Z + guardCubeRadius.Z))));
 
-	//------------------------------ Generate Grip Mesh, Modify it ------------------------------
+	//Generate Grip Mesh, Modify it
 	GenerateGrip();
 	
 	grip->CreateMeshSection_LinearColor(0, gripVertices, gripTriangles, gripNormals, gripUvs, gripVertexColors, gripTangents, true);
 	
-	grip->SetRelativeScale3D(FVector(1.f, 0.6f, 1.f));
+	//grip->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
 	grip->SetWorldLocation(guard->GetComponentLocation() - (FVector(0.f, 0.f, (guardCubeRadius.Z + gripCubeRadius.Z))));
 }
 
