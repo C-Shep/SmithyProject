@@ -49,6 +49,10 @@ APCGSword::APCGSword()
 	//Y = forward and back	(Girth)
 	//Z = height			(Height)
 
+	guardGirthMultiMin = 0.6;
+	guardWidthMultiMin = 0.8;
+
+
 }
 
 // Called when the game starts or when spawned
@@ -193,15 +197,15 @@ void APCGSword::GenerateMesh()
 
 	//clamp size of guard. girth to 0.6 as it should be smaller, width to 0.8 as it should be longer. - These are magic number and should be changed
 	float guardGirthMulti = girth;
-	if (guardGirthMulti < 0.6)
+	if (guardGirthMulti < guardGirthMultiMin)
 	{
-		guardGirthMulti = 0.6;
+		guardGirthMulti = guardGirthMultiMin;
 	}
 
 	float guardWidthMulti = width;
-	if (guardWidthMulti < 0.8)
+	if (guardWidthMulti < guardWidthMultiMin)
 	{
-		guardWidthMulti = 0.8;
+		guardWidthMulti = guardWidthMultiMin;
 	}
 	
 	guard->SetRelativeScale3D(FVector(guardGirthMulti * 3, guardWidthMulti * 2, 1.f));	//magic number, ill fix this later

@@ -34,17 +34,11 @@ public:
 	float girth;
 	float randHeight;
 
-	//------ Guard Variables ------
-	//Size of Guard
+	//Size of the guard
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector guardCubeRadius;
 
-	//Min number the size multiplier of the guard girth and width can be
-	float guardGirthMultiMin;
-	float guardWidthMultiMin;
-
-	//------ Grip Variables ------
-	//Size of Grip
+	//Size of the grip
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector gripCubeRadius;
 
