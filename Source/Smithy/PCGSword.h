@@ -48,6 +48,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector gripCubeRadius;
 
+	//------ Pommel Variables ------
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector pommelCubeRadius;
+
 	//Default Attributes
 	TArray<FVector> vertices;
 	TArray<int> triangles;
@@ -80,6 +84,14 @@ public:
 	TArray<FLinearColor> gripVertexColors;
 	TArray<FProcMeshTangent> gripTangents;
 
+	//Pommel Attributes
+	TArray<FVector> pommelVertices;
+	TArray<int> pommelTriangles;
+	TArray<FVector> pommelNormals;
+	TArray<FVector2D> pommelUvs;
+	TArray<FLinearColor> pommelVertexColors;
+	TArray<FProcMeshTangent> pommelTangents;
+
 	//Generate each section of the sword, somewhat of a main function
 	void GenerateMesh();
 
@@ -88,6 +100,7 @@ public:
 	void GenerateBlade();
 	void GenerateGuard();
 	void GenerateGrip();
+	void GeneratePommel();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USceneComponent* sceneComponent;
@@ -100,6 +113,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UProceduralMeshComponent* grip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UProceduralMeshComponent* pommel;
 
 	void AddTriangleMesh(FVector topRight, FVector bottomRight, FVector bottomLeft, int32& triIndex, FProcMeshTangent tangent);
 	void AddQuadMesh(FVector topRight, FVector bottomRight, FVector topLeft, FVector bottomLeft, int32& triIndex, FProcMeshTangent tangent);

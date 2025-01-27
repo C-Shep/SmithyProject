@@ -6,6 +6,19 @@
 // Sets default values
 APCGSword::APCGSword()
 {
+	//TO DO LIST
+	//Proper randomisation of guard						DONE
+	//Proper randomisation of grip						DONE
+	//Add pommel
+	//Redo generation functions cuz they could probably be a single function
+	//Tips of swords
+	//Redo Blade Variables cuz they suck
+	//Different blade types, single edged, curved
+	//Different guard types, curved, ornate, spiked
+	//Different grip types, spear-like, round, ornate
+	//Different pommel types, different shapes/designs
+
+
 	//srand(time(NULL));
 
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -18,6 +31,7 @@ APCGSword::APCGSword()
 	blade = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("BladeMesh"));
 	guard = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("GuardMesh"));
 	grip = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("GripMesh"));
+	pommel = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("PommelMesh"));
 
 	blade->SetupAttachment(sceneComponent);
 	blade->SetRelativeLocation(sceneComponent->GetComponentLocation());
@@ -27,16 +41,24 @@ APCGSword::APCGSword()
 
 	grip->SetupAttachment(guard);
 	grip->SetRelativeLocation(guard->GetComponentLocation());
+
+	pommel->SetupAttachment(grip);
+	pommel->SetRelativeLocation(grip->GetComponentLocation());
 	
 	//cook physics stuff
 	blade->bUseAsyncCooking = true;
 	guard->bUseAsyncCooking = true;
 	grip->bUseAsyncCooking = true;
+	pommel->bUseAsyncCooking = true;
 
 	//Randomize the swords size parameters
 	//X = left and right	(Width)
 	//Y = forward and back	(Girth)
 	//Z = height			(Height)
+
+	guardGirthMultiMin = 0.6;
+	guardWidthMultiMin = 0.8;
+
 
 }
 
@@ -150,59 +172,79 @@ void APCGSword::GenerateMesh()
 
 	/// --------------------- Grip Attributes ---------------------
 
-	//Width
-	float gripWidthMin = 5;//randCubeSize - (randCubeSize / 2);
-	float gripWidthMax = 5;// 15;//randCubeSize - (randCubeSize / 4);
-	float gripWidth = 5;// FMath::RandRange(gripWidthMin, gripWidthMax);
+	//Grip Width
+	float gripWidthMin = 4;
+	float gripWidthMax = 5;
+	float gripWidth = FMath::RandRange(gripWidthMin, gripWidthMax);
 
-	//Height
-	float gripHeightMin = 10;// randHeight / 8;
-	float gripHeightMax = 10;// randHeight / 4;
-	float gripHeight = 20;// FMath::RandRange(gripHeightMin, gripHeightMax);
+	//Grip Height
+	float gripHeightMin = 15;
+	float gripHeightMax = 35;
+	float gripHeight = FMath::RandRange(gripHeightMin, gripHeightMax);
 
 	gripCubeRadius = FVector(gripWidth, gripWidth, gripHeight);
 
+	/// --------------------- Pommel Attributes ---------------------
+	
+	//Pommel Width
+	float pommelWidthMin = gripWidth+1.f;
+	float pommelWidthMax = gripWidth+2.f;
+	float pommelWidth = FMath::RandRange(pommelWidthMin, pommelWidthMax);
+
+	//Pommel Height
+	float pommelHeightMin = pommelWidthMin-1.f;
+	float pommelHeightMax = pommelWidthMax;
+	float pommelHeight = FMath::RandRange(gripHeightMin, gripHeightMax);
+
+	pommelCubeRadius = FVector(pommelWidth, pommelWidth, pommelHeight);
 
 	//Fill the mesh variables with mesh data
 	GenerateBlade();
 
-
 	//Create the actual mesh from the multiple quad meshes
 
-	//Modify the Blade's Transform to look... uh... blade-like
+	//------------------------------ Modify the Blade's Transform to look... uh... blade-like ------------------------------
 	blade->CreateMeshSection_LinearColor(0, bladeVertices, bladeTriangles, bladeNormals, bladeUvs, bladeVertexColors, bladeTangents, true);
 
 	blade->SetWorldRotation(FRotator(0.f, 90.f,0.f));	//comment this properly bro
 	blade->SetRelativeScale3D(FVector(girth, width, 1.f));
 
-	//Generate Guard Mesh, Modify it
+	//------------------------------ Generate Guard Mesh, Modify it ------------------------------
 	GenerateGuard();
 
 	guard->CreateMeshSection_LinearColor(0, guardVertices, guardTriangles, guardNormals, guardUvs, guardVertexColors, guardTangents, true);
 
 	//clamp size of guard. girth to 0.6 as it should be smaller, width to 0.8 as it should be longer. - These are magic number and should be changed
 	float guardGirthMulti = girth;
-	if (guardGirthMulti < 0.6)
+	if (guardGirthMulti < guardGirthMultiMin)
 	{
-		guardGirthMulti = 0.6;
+		guardGirthMulti = guardGirthMultiMin;
 	}
 
 	float guardWidthMulti = width;
-	if (guardWidthMulti < 0.8)
+	if (guardWidthMulti < guardWidthMultiMin)
 	{
-		guardWidthMulti = 0.8;
+		guardWidthMulti = guardWidthMultiMin;
 	}
 	
 	guard->SetRelativeScale3D(FVector(guardGirthMulti * 3, guardWidthMulti * 2, 1.f));	//magic number, ill fix this later
 	guard->SetWorldLocation(blade->GetComponentLocation() - (FVector(0.f,0.f, (bladeCubeRadius.Z + guardCubeRadius.Z))));
 
-	//Generate Grip Mesh, Modify it
+	//------------------------------ Generate Grip Mesh, Modify it ------------------------------
 	GenerateGrip();
 	
 	grip->CreateMeshSection_LinearColor(0, gripVertices, gripTriangles, gripNormals, gripUvs, gripVertexColors, gripTangents, true);
 	
-	//grip->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
+	grip->SetRelativeScale3D(FVector(1.f, 0.6f, 1.f));
 	grip->SetWorldLocation(guard->GetComponentLocation() - (FVector(0.f, 0.f, (guardCubeRadius.Z + gripCubeRadius.Z))));
+
+	//------------------------------ Generate Pommel Mesh, Modify it ------------------------------
+	GeneratePommel();
+
+	pommel->CreateMeshSection_LinearColor(0, pommelVertices, pommelTriangles, pommelNormals, pommelUvs, pommelVertexColors, pommelTangents, true);
+
+	pommel->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
+	pommel->SetWorldLocation(grip->GetComponentLocation() - (FVector(0.f, 0.f, (gripCubeRadius.Z + pommelCubeRadius.Z))));
 }
 
 void APCGSword::GenerateBlade()
@@ -355,6 +397,56 @@ void APCGSword::GenerateGrip()
 	gripUvs = uvs;
 	gripVertexColors = vertexColors;
 	gripTangents = tangents;
+}
+
+void APCGSword::GeneratePommel()
+{
+	MeshReset();
+
+	int32 triangleIndexCount = 0;
+	FVector definedShape[8];
+	FProcMeshTangent tangentSetup;
+
+	definedShape[0] = FVector(-pommelCubeRadius.X, pommelCubeRadius.Y, pommelCubeRadius.Z);	//Forward Top Right
+	definedShape[1] = FVector(-pommelCubeRadius.X, pommelCubeRadius.Y, -pommelCubeRadius.Z);	//Forward Bottom Right
+	definedShape[2] = FVector(-pommelCubeRadius.X, -pommelCubeRadius.Y, pommelCubeRadius.Z);	//Forward Top Left
+	definedShape[3] = FVector(-pommelCubeRadius.X, -pommelCubeRadius.Y, -pommelCubeRadius.Z);	//Forward Bottom Left
+
+	definedShape[4] = FVector(pommelCubeRadius.X, -pommelCubeRadius.Y, pommelCubeRadius.Z);	//Reverse Top Right
+	definedShape[5] = FVector(pommelCubeRadius.X, -pommelCubeRadius.Y, -pommelCubeRadius.Z);	//Reverse Bottom Right
+	definedShape[6] = FVector(pommelCubeRadius.X, pommelCubeRadius.Y, pommelCubeRadius.Z);		//Reverse Top Left
+	definedShape[7] = FVector(pommelCubeRadius.X, pommelCubeRadius.Y, -pommelCubeRadius.Z);	//Reverse Bottom Left
+
+	//Front
+	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
+	AddQuadMesh(definedShape[0], definedShape[1], definedShape[2], definedShape[3], triangleIndexCount, tangentSetup);
+
+	//Left
+	tangentSetup = FProcMeshTangent(1.f, 0.0f, 0.0f);
+	AddQuadMesh(definedShape[2], definedShape[3], definedShape[4], definedShape[5], triangleIndexCount, tangentSetup);
+
+	//Back
+	tangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
+	AddQuadMesh(definedShape[4], definedShape[5], definedShape[6], definedShape[7], triangleIndexCount, tangentSetup);
+
+	//Right
+	tangentSetup = FProcMeshTangent(-1.f, 0.0f, 0.0f);
+	AddQuadMesh(definedShape[6], definedShape[7], definedShape[0], definedShape[1], triangleIndexCount, tangentSetup);
+
+	//Top
+	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
+	AddQuadMesh(definedShape[6], definedShape[0], definedShape[4], definedShape[2], triangleIndexCount, tangentSetup);
+
+	//Bottom
+	tangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
+	AddQuadMesh(definedShape[1], definedShape[7], definedShape[3], definedShape[5], triangleIndexCount, tangentSetup);
+
+	pommelVertices = vertices;
+	pommelTriangles = triangles;
+	pommelNormals = normals;
+	pommelUvs = uvs;
+	pommelVertexColors = vertexColors;
+	pommelTangents = tangents;
 }
 
 void APCGSword::AddTriangleMesh(FVector topRight, FVector bottomRight, FVector bottomLeft, int32& triIndex, FProcMeshTangent tangent)
