@@ -52,10 +52,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector pommelCubeRadius;
 
-	//------ Tip Variables ------
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector tipCubeRadius;
-
 	//Default Attributes
 	TArray<FVector> vertices;
 	TArray<int> triangles;
@@ -96,14 +92,6 @@ public:
 	TArray<FLinearColor> pommelVertexColors;
 	TArray<FProcMeshTangent> pommelTangents;
 
-	//Tip Attributes
-	TArray<FVector> tipVertices;
-	TArray<int> tipTriangles;
-	TArray<FVector> tipNormals;
-	TArray<FVector2D> tipUvs;
-	TArray<FLinearColor> tipVertexColors;
-	TArray<FProcMeshTangent> tipTangents;
-
 	//Generate each section of the sword, somewhat of a main function
 	void GenerateMesh();
 
@@ -113,7 +101,6 @@ public:
 	void GenerateGuard();
 	void GenerateGrip();
 	void GeneratePommel();
-	void GenerateTip();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USceneComponent* sceneComponent;
@@ -129,9 +116,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UProceduralMeshComponent* pommel;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UProceduralMeshComponent* tip;
 
 	void AddTriangleMesh(FVector topRight, FVector bottomRight, FVector bottomLeft, int32& triIndex, FProcMeshTangent tangent);
 	void AddQuadMesh(FVector topRight, FVector bottomRight, FVector topLeft, FVector bottomLeft, int32& triIndex, FProcMeshTangent tangent);

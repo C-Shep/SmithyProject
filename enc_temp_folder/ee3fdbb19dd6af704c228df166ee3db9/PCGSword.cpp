@@ -7,9 +7,9 @@
 APCGSword::APCGSword()
 {
 	//TO DO LIST
-	//Proper randomisation of guard						DONE
-	//Proper randomisation of grip						DONE
-	//Add pommel
+	//Proper randomisation of guard												DONE
+	//Proper randomisation of grip												DONE
+	//Add pommel																DONE
 	//Redo generation functions cuz they could probably be a single function
 	//Tips of swords
 	//Redo Blade Variables cuz they suck
@@ -173,8 +173,8 @@ void APCGSword::GenerateMesh()
 	/// --------------------- Grip Attributes ---------------------
 
 	//Grip Width
-	float gripWidthMin = 4;
-	float gripWidthMax = 5;
+	float gripWidthMin = 5;
+	float gripWidthMax = 7;
 	float gripWidth = FMath::RandRange(gripWidthMin, gripWidthMax);
 
 	//Grip Height
@@ -194,7 +194,7 @@ void APCGSword::GenerateMesh()
 	//Pommel Height
 	float pommelHeightMin = pommelWidthMin-1.f;
 	float pommelHeightMax = pommelWidthMax;
-	float pommelHeight = FMath::RandRange(gripHeightMin, gripHeightMax);
+	float pommelHeight = FMath::RandRange(pommelHeightMin, pommelHeightMax);
 
 	pommelCubeRadius = FVector(pommelWidth, pommelWidth, pommelHeight);
 
