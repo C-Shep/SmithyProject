@@ -263,8 +263,10 @@ void APCGSword::GenerateMesh()
 
 	tip->CreateMeshSection_LinearColor(0, tipVertices, tipTriangles, tipNormals, tipUvs, tipVertexColors, tipTangents, true);
 
-	tip->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
-	tip->SetWorldLocation(blade->GetComponentLocation() + (FVector(0.f, 0.f, (bladeCubeRadius.Z + tipCubeRadius.Z+1.f))));
+	//A number to multiply the horizontal size of the tip to match the size of the blade. I don't know why this needs to happen but it does.
+	const float tipToBladeConstant = 1.415f;
+	tip->SetRelativeScale3D(FVector(tipToBladeConstant, tipToBladeConstant, 1.f));
+	tip->SetWorldLocation(blade->GetComponentLocation() + (FVector(0.f, 0.f, (bladeCubeRadius.Z + tipCubeRadius.Z))));
 }
 
 void APCGSword::GenerateBlade()
@@ -483,27 +485,28 @@ void APCGSword::GenerateTip()
 	definedShape[3] = FVector(0.f, -tipCubeRadius.Y, -tipCubeRadius.Z);//Back Centre
 	definedShape[4] = FVector(0.f, 0.f, tipCubeRadius.Z);	//Tip Centre
 
-	//Front
-	tangentSetup = FProcMeshTangent(0.f, 0.0f, 1.0f);
-	AddTriangleMesh(definedShape[0], definedShape[1], definedShape[3], triangleIndexCount, tangentSetup);
-
-	//Left
-	tangentSetup = FProcMeshTangent(0.f, 0.0f, 1.0f);
-	AddTriangleMesh(definedShape[1], definedShape[2], definedShape[3], triangleIndexCount, tangentSetup);
-
-	//Back
-	tangentSetup = FProcMeshTangent(1.f, 0.0f, 0.0f);
-	AddTriangleMesh(definedShape[0], definedShape[1], definedShape[4], triangleIndexCount, tangentSetup);
-
-	//Right
-	tangentSetup = FProcMeshTangent(-1.f, 0.0f, 0.0f);
-	AddTriangleMesh(definedShape[0], definedShape[4], definedShape[3], triangleIndexCount, tangentSetup);
-
-	//Top
-	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
-	AddTriangleMesh(definedShape[1], definedShape[2], definedShape[4], triangleIndexCount, tangentSetup);
+	//These are uneeded
+	//Bottom
+	//tangentSetup = FProcMeshTangent(0.f, 0.0f, -1.0f);
+	//AddTriangleMesh(definedShape[0], definedShape[1], definedShape[3], triangleIndexCount, tangentSetup);
 
 	//Bottom
+	//tangentSetup = FProcMeshTangent(0.f, 0.0f, -1.0f);
+	//AddTriangleMesh(definedShape[1], definedShape[2], definedShape[3], triangleIndexCount, tangentSetup);
+
+	//Back Right
+	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
+	AddTriangleMesh(definedShape[0], definedShape[1], definedShape[4], triangleIndexCount, tangentSetup);
+
+	///Back Left
+	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
+	AddTriangleMesh(definedShape[3], definedShape[0], definedShape[4], triangleIndexCount, tangentSetup);
+
+	//Front Left
+	tangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
+	AddTriangleMesh(definedShape[4], definedShape[1], definedShape[2], triangleIndexCount, tangentSetup);
+
+	//Front Right
 	tangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
 	AddTriangleMesh(definedShape[3], definedShape[4], definedShape[2], triangleIndexCount, tangentSetup);
 
@@ -530,7 +533,7 @@ void APCGSword::AddTriangleMesh(FVector topRight, FVector bottomRight, FVector b
 	triangles.Add(point2);
 	triangles.Add(point3);
 
-	FVector thisNorm = FVector::CrossProduct(topRight, bottomRight).GetSafeNormal();
+	FVector thisNorm = FVector::CrossProduct(bottomRight,topRight).GetSafeNormal();
 	for (int i = 0; i < 3; i++)
 	{
 		normals.Add(thisNorm);
@@ -539,7 +542,7 @@ void APCGSword::AddTriangleMesh(FVector topRight, FVector bottomRight, FVector b
 	}
 
 	uvs.Add(FVector2D(1.0f, 1.0f));//Top Right
-	uvs.Add(FVector2D(1.0f, 0.0f));//Bottom Right
+	uvs.Add(FVector2D(0.0f, 1.0f));//Bottom Right
 	uvs.Add(FVector2D(0.0f, 0.0f));//Bottom Left
 	
 }

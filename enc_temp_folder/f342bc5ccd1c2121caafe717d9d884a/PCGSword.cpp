@@ -32,6 +32,7 @@ APCGSword::APCGSword()
 	guard = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("GuardMesh"));
 	grip = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("GripMesh"));
 	pommel = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("PommelMesh"));
+	tip = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("TipMesh"));
 
 	blade->SetupAttachment(sceneComponent);
 	blade->SetRelativeLocation(sceneComponent->GetComponentLocation());
@@ -44,12 +45,16 @@ APCGSword::APCGSword()
 
 	pommel->SetupAttachment(grip);
 	pommel->SetRelativeLocation(grip->GetComponentLocation());
+
+	tip->SetupAttachment(blade);
+	tip->SetRelativeLocation(blade->GetComponentLocation());
 	
 	//cook physics stuff
 	blade->bUseAsyncCooking = true;
 	guard->bUseAsyncCooking = true;
 	grip->bUseAsyncCooking = true;
 	pommel->bUseAsyncCooking = true;
+	tip->bUseAsyncCooking = true;
 
 	//Randomize the swords size parameters
 	//X = left and right	(Width)
@@ -198,6 +203,13 @@ void APCGSword::GenerateMesh()
 
 	pommelCubeRadius = FVector(pommelWidth, pommelWidth, pommelHeight);
 
+	/// --------------------- Tip Attributes ---------------------
+
+	//Tip Size, same lenght on all sides for now
+	float tipSize = randCubeSize;
+
+	tipCubeRadius = FVector(tipSize, tipSize, tipSize);
+
 	//Fill the mesh variables with mesh data
 	GenerateBlade();
 
@@ -245,6 +257,14 @@ void APCGSword::GenerateMesh()
 
 	pommel->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
 	pommel->SetWorldLocation(grip->GetComponentLocation() - (FVector(0.f, 0.f, (gripCubeRadius.Z + pommelCubeRadius.Z))));
+
+	//------------------------------ Generate Tip Mesh, Modify it ------------------------------
+	GenerateTip();
+
+	tip->CreateMeshSection_LinearColor(0, tipVertices, tipTriangles, tipNormals, tipUvs, tipVertexColors, tipTangents, true);
+
+	tip->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
+	tip->SetWorldLocation(blade->GetComponentLocation() + (FVector(0.f, 0.f, (bladeCubeRadius.Z + tipCubeRadius.Z+1.f))));
 }
 
 void APCGSword::GenerateBlade()
@@ -449,9 +469,55 @@ void APCGSword::GeneratePommel()
 	pommelTangents = tangents;
 }
 
+void APCGSword::GenerateTip()
+{
+	MeshReset();
+
+	int32 triangleIndexCount = 0;
+	FVector definedShape[5];
+	FProcMeshTangent tangentSetup;
+
+	definedShape[0] = FVector(-tipCubeRadius.X, 0.f, -tipCubeRadius.Z);	//Middle Right
+	definedShape[1] = FVector(0.f, tipCubeRadius.Y, -tipCubeRadius.Z);	//Forward Centre
+	definedShape[2] = FVector(tipCubeRadius.X, 0.f, -tipCubeRadius.Z);	//Middle Left
+	definedShape[3] = FVector(0.f, -tipCubeRadius.Y, -tipCubeRadius.Z);//Back Centre
+	definedShape[4] = FVector(0.f, 0.f, tipCubeRadius.Z);	//Tip Centre
+
+	//Front
+	tangentSetup = FProcMeshTangent(0.f, 0.0f, 1.0f);
+	AddTriangleMesh(definedShape[0], definedShape[1], definedShape[3], triangleIndexCount, tangentSetup);
+
+	//Left
+	tangentSetup = FProcMeshTangent(0.f, 0.0f, 1.0f);
+	AddTriangleMesh(definedShape[1], definedShape[2], definedShape[3], triangleIndexCount, tangentSetup);
+
+	//Back
+	tangentSetup = FProcMeshTangent(1.f, 0.0f, 0.0f);
+	AddTriangleMesh(definedShape[0], definedShape[1], definedShape[4], triangleIndexCount, tangentSetup);
+
+	//Right
+	tangentSetup = FProcMeshTangent(-1.f, 0.0f, 0.0f);
+	AddTriangleMesh(definedShape[0], definedShape[4], definedShape[3], triangleIndexCount, tangentSetup);
+
+	//Top
+	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
+	AddTriangleMesh(definedShape[1], definedShape[2], definedShape[4], triangleIndexCount, tangentSetup);
+
+	//Bottom
+	tangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
+	AddTriangleMesh(definedShape[3], definedShape[4], definedShape[2], triangleIndexCount, tangentSetup);
+
+	tipVertices = vertices;
+	tipTriangles = triangles;
+	tipNormals = normals;
+	tipUvs = uvs;
+	tipVertexColors = vertexColors;
+	tipTangents = tangents;
+}
+
 void APCGSword::AddTriangleMesh(FVector topRight, FVector bottomRight, FVector bottomLeft, int32& triIndex, FProcMeshTangent tangent)
 {
-	/*
+	
 	int32 point1 = triIndex++;
 	int32 point2 = triIndex++;
 	int32 point3 = triIndex++;
@@ -475,7 +541,7 @@ void APCGSword::AddTriangleMesh(FVector topRight, FVector bottomRight, FVector b
 	uvs.Add(FVector2D(1.0f, 1.0f));//Top Right
 	uvs.Add(FVector2D(1.0f, 0.0f));//Bottom Right
 	uvs.Add(FVector2D(0.0f, 0.0f));//Bottom Left
-	*/
+	
 }
 
 void APCGSword::AddQuadMesh(FVector topLeft, FVector bottomLeft, FVector topRight, FVector bottomRight, int32& triIndex, FProcMeshTangent tangent)
