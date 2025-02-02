@@ -130,13 +130,13 @@ void APCGSword::GenerateMesh()
 	MeshReset();
 
 	//Size of the cube at base
-	float cubeSizeMin = 5.f;
-	float cubeSizeMax = 50.f;
-	float randCubeSize = FMath::RandRange(cubeSizeMin, cubeSizeMax);
+	const float cubeSizeMin = 5.f;
+	const float cubeSizeMax = 50.f;
+	const float randCubeSize = FMath::RandRange(cubeSizeMin, cubeSizeMax);
 
 	//Height
-	float heightMin = 25.f;
-	float heightMax = 200.f;
+	const float heightMin = 25.f;
+	const float heightMax = 200.f;
 	randHeight = FMath::RandRange(heightMin, heightMax);
 
 	//Set size of cube to be the randomized parameters
@@ -146,67 +146,67 @@ void APCGSword::GenerateMesh()
 
 	//Width
 	//Set random width for use later after the cube is created
-	float widthMin = 0.2f;
-	float widthMax = 1.3f;
+	const float widthMin = 0.2f;
+	const float widthMax = 1.3f;
 	width = FMath::RandRange(widthMin, widthMax);
 
 	//Girth
 	//Set random girth for use later after the cube is created
-	float girthMin = widthMin;
-	float girthMax = width - (width / 4); //WE GOTS A MAGIC NUMBA HERE BAWSS!!! (wait does this even count as a magic number?)
+	const float girthMin = widthMin;
+	const float girthMax = width - (width / 4); //WE GOTS A MAGIC NUMBA HERE BAWSS!!! (wait does this even count as a magic number?)
 	girth = FMath::RandRange(girthMin, girthMax);
 
 	/// --------------------- Guard Attributes ---------------------
 
 	//Guard Width
-	float guardWidthMin = randCubeSize + (randCubeSize / 7);
-	float guardWidthMax = randCubeSize + (randCubeSize / 5);
-	float guardWidth = FMath::RandRange(guardWidthMin, guardWidthMax);
+	const float guardWidthMin = randCubeSize + (randCubeSize / 7);
+	const float guardWidthMax = randCubeSize + (randCubeSize / 5);
+	const float guardWidth = FMath::RandRange(guardWidthMin, guardWidthMax);
 
 	//Girth Girth
-	float guardGirthMin = randCubeSize + (guardWidthMin / 4.f);
-	float guardGirthMax = randCubeSize + (guardWidthMax / 2.f);
-	float guardGirth = FMath::RandRange(guardWidthMin, guardWidthMax);
+	const float guardGirthMin = randCubeSize + (guardWidthMin / 4.f);
+	const float guardGirthMax = randCubeSize + (guardWidthMax / 2.f);
+	const float guardGirth = FMath::RandRange(guardWidthMin, guardWidthMax);
 
 	//Height
-	float guardHeightMin = 3.f;
-	float guardHeightMax = 4.f;
-	float guardHeight = FMath::RandRange(guardHeightMin, guardHeightMax);
+	const float guardHeightMin = 3.f;
+	const float guardHeightMax = 4.f;
+	const float guardHeight = FMath::RandRange(guardHeightMin, guardHeightMax);
 
 	guardCubeRadius = FVector(guardWidth, guardGirth, guardHeight);
 
 	/// --------------------- Grip Attributes ---------------------
 
 	//Grip Width
-	float gripWidthMin = 5;
-	float gripWidthMax = 7;
-	float gripWidth = FMath::RandRange(gripWidthMin, gripWidthMax);
+	const float gripWidthMin = 5;
+	const float gripWidthMax = 7;
+	const float gripWidth = FMath::RandRange(gripWidthMin, gripWidthMax);
 
 	//Grip Height
-	float gripHeightMin = 15;
-	float gripHeightMax = 35;
-	float gripHeight = FMath::RandRange(gripHeightMin, gripHeightMax);
+	const float gripHeightMin = 15;
+	const float gripHeightMax = 35;
+	const float gripHeight = FMath::RandRange(gripHeightMin, gripHeightMax);
 
 	gripCubeRadius = FVector(gripWidth, gripWidth, gripHeight);
 
 	/// --------------------- Pommel Attributes ---------------------
 	
 	//Pommel Width
-	float pommelWidthMin = gripWidth+1.f;
-	float pommelWidthMax = gripWidth+2.f;
-	float pommelWidth = FMath::RandRange(pommelWidthMin, pommelWidthMax);
+	const float pommelWidthMin = gripWidth+1.f;
+	const float pommelWidthMax = gripWidth+2.f;
+	const float pommelWidth = FMath::RandRange(pommelWidthMin, pommelWidthMax);
 
 	//Pommel Height
-	float pommelHeightMin = pommelWidthMin-1.f;
-	float pommelHeightMax = pommelWidthMax;
-	float pommelHeight = FMath::RandRange(pommelHeightMin, pommelHeightMax);
+	const float pommelHeightMin = pommelWidthMin-1.f;
+	const float pommelHeightMax = pommelWidthMax;
+	const float pommelHeight = FMath::RandRange(pommelHeightMin, pommelHeightMax);
 
 	pommelCubeRadius = FVector(pommelWidth, pommelWidth, pommelHeight);
 
 	/// --------------------- Tip Attributes ---------------------
 
 	//Tip Size, same lenght on all sides for now
-	float tipSize = randCubeSize;
+	const float tipSize = randCubeSize;
 
 	tipCubeRadius = FVector(tipSize, tipSize, tipSize);
 
