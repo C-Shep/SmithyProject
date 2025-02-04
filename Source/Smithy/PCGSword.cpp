@@ -63,7 +63,7 @@ APCGSword::APCGSword()
 
 	guardGirthMultiMin = 0.6;
 	guardWidthMultiMin = 0.8;
-
+	guardGirthMultiMax = 1.f;
 
 }
 
@@ -233,6 +233,11 @@ void APCGSword::GenerateMesh()
 		guardGirthMulti = guardGirthMultiMin;
 	}
 
+	if (guardGirthMulti > guardGirthMultiMax)
+	{
+		guardGirthMulti = guardGirthMultiMax;
+	}
+
 	float guardWidthMulti = width;
 	if (guardWidthMulti < guardWidthMultiMin)
 	{
@@ -289,30 +294,9 @@ void APCGSword::GenerateBlade()
 	definedShape[6] = rot.RotateVector(FVector(bladeCubeRadius.X, bladeCubeRadius.Y, bladeCubeRadius.Z));	//Reverse Top Left
 	definedShape[7] = rot.RotateVector(FVector(bladeCubeRadius.X, bladeCubeRadius.Y, -bladeCubeRadius.Z));	//Reverse Bottom Left
 
-	//Front
-	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
-	AddQuadMesh(definedShape[0], definedShape[1], definedShape[2], definedShape[3], triangleIndexCount, tangentSetup);
-
-	//Left
-	tangentSetup = FProcMeshTangent(1.f, 0.0f, 0.0f);
-	AddQuadMesh(definedShape[2], definedShape[3], definedShape[4], definedShape[5], triangleIndexCount, tangentSetup);
-
-	//Back
-	tangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
-	AddQuadMesh(definedShape[4], definedShape[5], definedShape[6], definedShape[7], triangleIndexCount, tangentSetup);
-
-	//Right
-	tangentSetup = FProcMeshTangent(-1.f, 0.0f, 0.0f);
-	AddQuadMesh(definedShape[6], definedShape[7], definedShape[0], definedShape[1], triangleIndexCount, tangentSetup);
-
-	//Top
-	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
-	AddQuadMesh(definedShape[6], definedShape[0], definedShape[4], definedShape[2], triangleIndexCount, tangentSetup);
-
-	//Bottom
-	tangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
-	AddQuadMesh(definedShape[1], definedShape[7], definedShape[3], definedShape[5], triangleIndexCount, tangentSetup);
-
+	//Generate a cube using the defined shape array
+	GenerateSwordCube(definedShape);
+	
 	bladeVertices = vertices;
 	bladeTriangles = triangles;
 	bladeNormals = normals;
@@ -339,30 +323,9 @@ void APCGSword::GenerateGuard()
 	definedShape[6] = FVector(guardCubeRadius.X, guardCubeRadius.Y, guardCubeRadius.Z);		//Reverse Top Left
 	definedShape[7] = FVector(guardCubeRadius.X, guardCubeRadius.Y, -guardCubeRadius.Z);	//Reverse Bottom Left
 
-	//Front
-	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
-	AddQuadMesh(definedShape[0], definedShape[1], definedShape[2], definedShape[3], triangleIndexCount, tangentSetup);
+	//Generate a cube using the defined shape array
+	GenerateSwordCube(definedShape);
 
-	//Left
-	tangentSetup = FProcMeshTangent(1.f, 0.0f, 0.0f);
-	AddQuadMesh(definedShape[2], definedShape[3], definedShape[4], definedShape[5], triangleIndexCount, tangentSetup);
-
-	//Back
-	tangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
-	AddQuadMesh(definedShape[4], definedShape[5], definedShape[6], definedShape[7], triangleIndexCount, tangentSetup);
-
-	//Right
-	tangentSetup = FProcMeshTangent(-1.f, 0.0f, 0.0f);
-	AddQuadMesh(definedShape[6], definedShape[7], definedShape[0], definedShape[1], triangleIndexCount, tangentSetup);
-
-	//Top
-	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
-	AddQuadMesh(definedShape[6], definedShape[0], definedShape[4], definedShape[2], triangleIndexCount, tangentSetup);
-
-	//Bottom
-	tangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
-	AddQuadMesh(definedShape[1], definedShape[7], definedShape[3], definedShape[5], triangleIndexCount, tangentSetup);
-	
 	guardVertices = vertices;
 	guardTriangles = triangles;
 	guardNormals = normals;
@@ -376,42 +339,21 @@ void APCGSword::GenerateGrip()
 	MeshReset();
 
 	int32 gripTriangleIndexCount = 0;
-	FVector gripDefinedShape[8];
+	FVector definedShape[8];
 	FProcMeshTangent gripTangentSetup;
 
-	gripDefinedShape[0] = FVector(-gripCubeRadius.X, gripCubeRadius.Y, gripCubeRadius.Z);	//Forward Top Right
-	gripDefinedShape[1] = FVector(-gripCubeRadius.X, gripCubeRadius.Y, -gripCubeRadius.Z);	//Forward Bottom Right
-	gripDefinedShape[2] = FVector(-gripCubeRadius.X, -gripCubeRadius.Y, gripCubeRadius.Z);	//Forward Top Left
-	gripDefinedShape[3] = FVector(-gripCubeRadius.X, -gripCubeRadius.Y, -gripCubeRadius.Z);	//Forward Bottom Left
+	definedShape[0] = FVector(-gripCubeRadius.X, gripCubeRadius.Y, gripCubeRadius.Z);	//Forward Top Right
+	definedShape[1] = FVector(-gripCubeRadius.X, gripCubeRadius.Y, -gripCubeRadius.Z);	//Forward Bottom Right
+	definedShape[2] = FVector(-gripCubeRadius.X, -gripCubeRadius.Y, gripCubeRadius.Z);	//Forward Top Left
+	definedShape[3] = FVector(-gripCubeRadius.X, -gripCubeRadius.Y, -gripCubeRadius.Z);	//Forward Bottom Left
 
-	gripDefinedShape[4] = FVector(gripCubeRadius.X, -gripCubeRadius.Y, gripCubeRadius.Z);	//Reverse Top Right
-	gripDefinedShape[5] = FVector(gripCubeRadius.X, -gripCubeRadius.Y, -gripCubeRadius.Z);	//Reverse Bottom Right
-	gripDefinedShape[6] = FVector(gripCubeRadius.X, gripCubeRadius.Y, gripCubeRadius.Z);		//Reverse Top Left
-	gripDefinedShape[7] = FVector(gripCubeRadius.X, gripCubeRadius.Y, -gripCubeRadius.Z);	//Reverse Bottom Left
+	definedShape[4] = FVector(gripCubeRadius.X, -gripCubeRadius.Y, gripCubeRadius.Z);	//Reverse Top Right
+	definedShape[5] = FVector(gripCubeRadius.X, -gripCubeRadius.Y, -gripCubeRadius.Z);	//Reverse Bottom Right
+	definedShape[6] = FVector(gripCubeRadius.X, gripCubeRadius.Y, gripCubeRadius.Z);		//Reverse Top Left
+	definedShape[7] = FVector(gripCubeRadius.X, gripCubeRadius.Y, -gripCubeRadius.Z);	//Reverse Bottom Left
 
-	//Front
-	gripTangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
-	AddQuadMesh(gripDefinedShape[0], gripDefinedShape[1], gripDefinedShape[2], gripDefinedShape[3], gripTriangleIndexCount, gripTangentSetup);
-
-	//Left
-	gripTangentSetup = FProcMeshTangent(1.f, 0.0f, 0.0f);
-	AddQuadMesh(gripDefinedShape[2], gripDefinedShape[3], gripDefinedShape[4], gripDefinedShape[5], gripTriangleIndexCount, gripTangentSetup);
-
-	//Back
-	gripTangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
-	AddQuadMesh(gripDefinedShape[4], gripDefinedShape[5], gripDefinedShape[6], gripDefinedShape[7], gripTriangleIndexCount, gripTangentSetup);
-
-	//Right
-	gripTangentSetup = FProcMeshTangent(-1.f, 0.0f, 0.0f);
-	AddQuadMesh(gripDefinedShape[6], gripDefinedShape[7], gripDefinedShape[0], gripDefinedShape[1], gripTriangleIndexCount, gripTangentSetup);
-
-	//Top
-	gripTangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
-	AddQuadMesh(gripDefinedShape[6], gripDefinedShape[0], gripDefinedShape[4], gripDefinedShape[2], gripTriangleIndexCount, gripTangentSetup);
-
-	//Bottom
-	gripTangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
-	AddQuadMesh(gripDefinedShape[1], gripDefinedShape[7], gripDefinedShape[3], gripDefinedShape[5], gripTriangleIndexCount, gripTangentSetup);
+	//Generate a cube using the defined shape array
+	GenerateSwordCube(definedShape);
 
 	gripVertices = vertices;
 	gripTriangles = triangles;
@@ -439,29 +381,8 @@ void APCGSword::GeneratePommel()
 	definedShape[6] = FVector(pommelCubeRadius.X, pommelCubeRadius.Y, pommelCubeRadius.Z);		//Reverse Top Left
 	definedShape[7] = FVector(pommelCubeRadius.X, pommelCubeRadius.Y, -pommelCubeRadius.Z);	//Reverse Bottom Left
 
-	//Front
-	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
-	AddQuadMesh(definedShape[0], definedShape[1], definedShape[2], definedShape[3], triangleIndexCount, tangentSetup);
-
-	//Left
-	tangentSetup = FProcMeshTangent(1.f, 0.0f, 0.0f);
-	AddQuadMesh(definedShape[2], definedShape[3], definedShape[4], definedShape[5], triangleIndexCount, tangentSetup);
-
-	//Back
-	tangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
-	AddQuadMesh(definedShape[4], definedShape[5], definedShape[6], definedShape[7], triangleIndexCount, tangentSetup);
-
-	//Right
-	tangentSetup = FProcMeshTangent(-1.f, 0.0f, 0.0f);
-	AddQuadMesh(definedShape[6], definedShape[7], definedShape[0], definedShape[1], triangleIndexCount, tangentSetup);
-
-	//Top
-	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
-	AddQuadMesh(definedShape[6], definedShape[0], definedShape[4], definedShape[2], triangleIndexCount, tangentSetup);
-
-	//Bottom
-	tangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
-	AddQuadMesh(definedShape[1], definedShape[7], definedShape[3], definedShape[5], triangleIndexCount, tangentSetup);
+	//Generate a cube using the defined shape array
+	GenerateSwordCube(definedShape);
 
 	pommelVertices = vertices;
 	pommelTriangles = triangles;
@@ -485,14 +406,7 @@ void APCGSword::GenerateTip()
 	definedShape[3] = FVector(0.f, -tipCubeRadius.Y, -tipCubeRadius.Z);//Back Centre
 	definedShape[4] = FVector(0.f, 0.f, tipCubeRadius.Z);	//Tip Centre
 
-	//These are uneeded
-	//Bottom
-	//tangentSetup = FProcMeshTangent(0.f, 0.0f, -1.0f);
-	//AddTriangleMesh(definedShape[0], definedShape[1], definedShape[3], triangleIndexCount, tangentSetup);
-
-	//Bottom
-	//tangentSetup = FProcMeshTangent(0.f, 0.0f, -1.0f);
-	//AddTriangleMesh(definedShape[1], definedShape[2], definedShape[3], triangleIndexCount, tangentSetup);
+	//Dont use generateSwordCube for this one, its not a cube its a pyramid
 
 	//Back Right
 	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
@@ -516,6 +430,36 @@ void APCGSword::GenerateTip()
 	tipUvs = uvs;
 	tipVertexColors = vertexColors;
 	tipTangents = tangents;
+}
+
+void APCGSword::GenerateSwordCube(FVector defShape[8])
+{
+	FProcMeshTangent tangentSetup;
+	int32 triangleIndexCount = 0;
+
+	//Front
+	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
+	AddQuadMesh(defShape[0], defShape[1], defShape[2], defShape[3], triangleIndexCount, tangentSetup);
+
+	//Left
+	tangentSetup = FProcMeshTangent(1.f, 0.0f, 0.0f);
+	AddQuadMesh(defShape[2], defShape[3], defShape[4], defShape[5], triangleIndexCount, tangentSetup);
+
+	//Back
+	tangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
+	AddQuadMesh(defShape[4], defShape[5], defShape[6], defShape[7], triangleIndexCount, tangentSetup);
+
+	//Right
+	tangentSetup = FProcMeshTangent(-1.f, 0.0f, 0.0f);
+	AddQuadMesh(defShape[6], defShape[7], defShape[0], defShape[1], triangleIndexCount, tangentSetup);
+
+	//Top
+	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
+	AddQuadMesh(defShape[6], defShape[0], defShape[4], defShape[2], triangleIndexCount, tangentSetup);
+
+	//Bottom
+	tangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
+	AddQuadMesh(defShape[1], defShape[7], defShape[3], defShape[5], triangleIndexCount, tangentSetup);
 }
 
 void APCGSword::AddTriangleMesh(FVector topRight, FVector bottomRight, FVector bottomLeft, int32& triIndex, FProcMeshTangent tangent)

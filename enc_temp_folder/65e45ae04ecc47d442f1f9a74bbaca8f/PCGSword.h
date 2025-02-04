@@ -43,9 +43,6 @@ public:
 	float guardGirthMultiMin;
 	float guardWidthMultiMin;
 
-	//Max number the size multiplier of the guard girth can be
-	float guardGirthMultiMax;
-
 	//------ Grip Variables ------
 	//Size of Grip
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -117,8 +114,6 @@ public:
 	void GenerateGrip();
 	void GeneratePommel();
 	void GenerateTip();
-
-	void GenerateSwordCube(FVector defShape[8]);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USceneComponent* sceneComponent;
