@@ -10,8 +10,8 @@ APCGSword::APCGSword()
 	//Proper randomisation of guard												DONE
 	//Proper randomisation of grip												DONE
 	//Add pommel																DONE
-	//Redo generation functions cuz they could probably be a single function
-	//Tips of swords
+	//Redo generation functions cuz they could probably be a single function	DONE
+	//Tips of swords															DONE
 	//Redo Blade Variables cuz they suck
 	//Different blade types, single edged, curved
 	//Different guard types, curved, ornate, spiked
@@ -33,6 +33,7 @@ APCGSword::APCGSword()
 	grip = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("GripMesh"));
 	pommel = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("PommelMesh"));
 	tip = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("TipMesh"));
+	prismBlade = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("PrismMesh"));
 
 	blade->SetupAttachment(sceneComponent);
 	blade->SetRelativeLocation(sceneComponent->GetComponentLocation());
@@ -48,6 +49,9 @@ APCGSword::APCGSword()
 
 	tip->SetupAttachment(blade);
 	tip->SetRelativeLocation(blade->GetComponentLocation());
+
+	prismBlade->SetupAttachment(sceneComponent);
+	prismBlade->SetRelativeLocation(sceneComponent->GetComponentLocation());
 	
 	//cook physics stuff
 	blade->bUseAsyncCooking = true;
@@ -55,6 +59,7 @@ APCGSword::APCGSword()
 	grip->bUseAsyncCooking = true;
 	pommel->bUseAsyncCooking = true;
 	tip->bUseAsyncCooking = true;
+	prismBlade->bUseAsyncCooking = true;
 
 	//Randomize the swords size parameters
 	//X = left and right	(Width)
@@ -102,27 +107,6 @@ void APCGSword::MeshReset()
 	uvs.Reset();
 	vertexColors.Reset();
 	tangents.Reset();
-	/*
-	bladeVertices.Reset();
-	bladeTriangles.Reset();
-	bladeNormals.Reset();
-	bladeUvs.Reset();
-	bladeVertexColors.Reset();
-	bladeTangents.Reset();
-
-	guardVertices.Reset();
-	guardTriangles.Reset();
-	guardNormals.Reset();
-	guardUvs.Reset();
-	guardVertexColors.Reset();
-	guardTangents.Reset();*/
-
-	gripVertices.Reset();
-	gripTriangles.Reset();
-	gripNormals.Reset();
-	gripUvs.Reset();
-	gripVertexColors.Reset();
-	gripTangents.Reset();
 }
 
 void APCGSword::GenerateMesh()
@@ -210,16 +194,23 @@ void APCGSword::GenerateMesh()
 
 	tipCubeRadius = FVector(tipSize, tipSize, tipSize);
 
-	//Fill the mesh variables with mesh data
-	GenerateBlade();
+	/// --------------------- Tip Attributes ---------------------
 
+	//Tip Size, same lenght on all sides for now
+	const float prismSize = randCubeSize;
+
+	prismCubeRadius = FVector(prismSize, prismSize, prismSize);
+
+	//------------------------------ Fill the Mesh Variables with Mesh Data ------------------------------
+	GenerateBlade();
+	blade->SetVisibility(false);
 	//Create the actual mesh from the multiple quad meshes
 
 	//------------------------------ Modify the Blade's Transform to look... uh... blade-like ------------------------------
-	blade->CreateMeshSection_LinearColor(0, bladeVertices, bladeTriangles, bladeNormals, bladeUvs, bladeVertexColors, bladeTangents, true);
+	//blade->CreateMeshSection_LinearColor(0, bladeVertices, bladeTriangles, bladeNormals, bladeUvs, bladeVertexColors, bladeTangents, true);
 
-	blade->SetWorldRotation(FRotator(0.f, 90.f,0.f));	//comment this properly bro
-	blade->SetRelativeScale3D(FVector(girth, width, 1.f));
+	//blade->SetWorldRotation(FRotator(0.f, 90.f,0.f));	//comment this properly bro
+	//blade->SetRelativeScale3D(FVector(girth, width, 1.f));
 
 	//------------------------------ Generate Guard Mesh, Modify it ------------------------------
 	GenerateGuard();
@@ -272,6 +263,15 @@ void APCGSword::GenerateMesh()
 	const float tipToBladeConstant = 1.415f;
 	tip->SetRelativeScale3D(FVector(tipToBladeConstant, tipToBladeConstant, 1.f));
 	tip->SetWorldLocation(blade->GetComponentLocation() + (FVector(0.f, 0.f, (bladeCubeRadius.Z + tipCubeRadius.Z))));
+
+	//------------------------------ Generate Prism Blade Mesh, Modify it ------------------------------
+	GeneratePrismBlade();
+
+	prismBlade->CreateMeshSection_LinearColor(0, prismVertices, prismTriangles, prismNormals, prismUvs, prismVertexColors, prismTangents, true);
+
+	//A number to multiply the horizontal size of the tip to match the size of the blade. I don't know why this needs to happen but it does.
+	prismBlade->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
+	prismBlade->SetWorldLocation(blade->GetComponentLocation());
 }
 
 void APCGSword::GenerateBlade()
@@ -430,6 +430,42 @@ void APCGSword::GenerateTip()
 	tipUvs = uvs;
 	tipVertexColors = vertexColors;
 	tipTangents = tangents;
+}
+
+void APCGSword::GeneratePrismBlade()
+{
+	MeshReset();
+
+	int32 triangleIndexCount = 0;
+	FVector definedShape[8];
+	FProcMeshTangent tangentSetup;
+
+	definedShape[0] = FVector(-prismCubeRadius.X, 0.f, -prismCubeRadius.Z);	
+	definedShape[1] = FVector(prismCubeRadius.X, prismCubeRadius.Y, -prismCubeRadius.Z);	
+	definedShape[2] = FVector(prismCubeRadius.X, -prismCubeRadius.Y, -prismCubeRadius.Z);	
+	definedShape[3] = FVector(-prismCubeRadius.X, 0.f, prismCubeRadius.Z);	
+	definedShape[4] = FVector(prismCubeRadius.X, prismCubeRadius.Y, prismCubeRadius.Z);	
+	definedShape[5] = FVector(prismCubeRadius.X, -prismCubeRadius.Y, prismCubeRadius.Z);	
+
+	//Front
+	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
+	AddQuadMesh(definedShape[2], definedShape[5], definedShape[0], definedShape[3], triangleIndexCount, tangentSetup);
+
+	//Right
+	tangentSetup = FProcMeshTangent(1.f, 0.0f, 0.0f);
+	AddQuadMesh(definedShape[3], definedShape[4], definedShape[0], definedShape[1], triangleIndexCount, tangentSetup);
+
+	//Back
+	tangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
+	AddQuadMesh(definedShape[4], definedShape[5], definedShape[1], definedShape[2], triangleIndexCount, tangentSetup);
+	//Top
+
+	prismVertices = vertices;
+	prismTriangles = triangles;
+	prismNormals = normals;
+	prismUvs = uvs;
+	prismVertexColors = vertexColors;
+	prismTangents = tangents;
 }
 
 void APCGSword::GenerateSwordCube(FVector defShape[8])

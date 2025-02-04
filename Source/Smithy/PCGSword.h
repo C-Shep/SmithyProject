@@ -59,6 +59,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector tipCubeRadius;
 
+	//------ Prism Variables ------
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector prismCubeRadius;
+	bool isPrismBladeType; //Temporary check for blade type, will make this an enum later
+
 	//Default Attributes
 	TArray<FVector> vertices;
 	TArray<int> triangles;
@@ -107,17 +112,29 @@ public:
 	TArray<FLinearColor> tipVertexColors;
 	TArray<FProcMeshTangent> tipTangents;
 
+	//Prism Attributes
+	TArray<FVector> prismVertices;
+	TArray<int> prismTriangles;
+	TArray<FVector> prismNormals;
+	TArray<FVector2D> prismUvs;
+	TArray<FLinearColor> prismVertexColors;
+	TArray<FProcMeshTangent> prismTangents;
+
 	//Generate each section of the sword, somewhat of a main function
 	void GenerateMesh();
 
+	//Reset the variables for mesh generation to be used in the next part of teh sword
 	void MeshReset();
 
+	//Generate each part of the sword
 	void GenerateBlade();
 	void GenerateGuard();
 	void GenerateGrip();
 	void GeneratePommel();
 	void GenerateTip();
+	void GeneratePrismBlade();
 
+	//Generates a cube based on the 8 vectors passed in 
 	void GenerateSwordCube(FVector defShape[8]);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -137,6 +154,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UProceduralMeshComponent* tip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UProceduralMeshComponent* prismBlade;
 
 	void AddTriangleMesh(FVector topRight, FVector bottomRight, FVector bottomLeft, int32& triIndex, FProcMeshTangent tangent);
 	void AddQuadMesh(FVector topRight, FVector bottomRight, FVector topLeft, FVector bottomLeft, int32& triIndex, FProcMeshTangent tangent);
