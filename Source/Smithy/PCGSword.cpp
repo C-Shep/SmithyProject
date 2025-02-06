@@ -113,6 +113,18 @@ void APCGSword::GenerateMesh()
 {
 	MeshReset();
 
+	//set blade type
+	float randBladeType = FMath::RandRange(0, 1);
+	if (randBladeType == 1)
+	{
+		isPrismBladeType = true;
+	}
+	else {
+		isPrismBladeType = false;
+	}
+		
+	
+
 	//Size of the cube at base
 	const float cubeSizeMin = 5.f;
 	const float cubeSizeMax = 50.f;
@@ -199,18 +211,25 @@ void APCGSword::GenerateMesh()
 	//Tip Size, same lenght on all sides for now
 	const float prismSize = randCubeSize;
 
-	prismCubeRadius = FVector(prismSize, prismSize, prismSize);
+	prismCubeRadius = FVector(prismSize, prismSize, randHeight);
 
 	//------------------------------ Fill the Mesh Variables with Mesh Data ------------------------------
 	GenerateBlade();
-	blade->SetVisibility(false);
+
 	//Create the actual mesh from the multiple quad meshes
 
 	//------------------------------ Modify the Blade's Transform to look... uh... blade-like ------------------------------
-	//blade->CreateMeshSection_LinearColor(0, bladeVertices, bladeTriangles, bladeNormals, bladeUvs, bladeVertexColors, bladeTangents, true);
+	blade->CreateMeshSection_LinearColor(0, bladeVertices, bladeTriangles, bladeNormals, bladeUvs, bladeVertexColors, bladeTangents, true);
 
-	//blade->SetWorldRotation(FRotator(0.f, 90.f,0.f));	//comment this properly bro
-	//blade->SetRelativeScale3D(FVector(girth, width, 1.f));
+	if (!isPrismBladeType)
+	{
+		blade->SetWorldRotation(FRotator(0.f, 90.f, 0.f));	//if normal blade, rotate so its 
+		blade->SetRelativeScale3D(FVector(girth, width, 1.f));
+	}
+	else {
+		blade->SetRelativeScale3D(FVector(width, girth, 1.f));
+	}
+
 
 	//------------------------------ Generate Guard Mesh, Modify it ------------------------------
 	GenerateGuard();
@@ -265,13 +284,13 @@ void APCGSword::GenerateMesh()
 	tip->SetWorldLocation(blade->GetComponentLocation() + (FVector(0.f, 0.f, (bladeCubeRadius.Z + tipCubeRadius.Z))));
 
 	//------------------------------ Generate Prism Blade Mesh, Modify it ------------------------------
-	GeneratePrismBlade();
+	//GeneratePrismBlade();
 
-	prismBlade->CreateMeshSection_LinearColor(0, prismVertices, prismTriangles, prismNormals, prismUvs, prismVertexColors, prismTangents, true);
+	//prismBlade->CreateMeshSection_LinearColor(0, prismVertices, prismTriangles, prismNormals, prismUvs, prismVertexColors, prismTangents, true);
 
 	//A number to multiply the horizontal size of the tip to match the size of the blade. I don't know why this needs to happen but it does.
-	prismBlade->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
-	prismBlade->SetWorldLocation(blade->GetComponentLocation());
+	//prismBlade->SetRelativeScale3D(FVector(width, girth, 1.f));
+	//prismBlade->SetWorldLocation(blade->GetComponentLocation());
 }
 
 void APCGSword::GenerateBlade()
@@ -282,21 +301,27 @@ void APCGSword::GenerateBlade()
 	FVector definedShape[8];
 	FProcMeshTangent tangentSetup;
 
-	const FRotator rot(0, 45, 0);
+	if (!isPrismBladeType)
+	{
+		const FRotator rot(0, 45, 0);
 
-	definedShape[0] = rot.RotateVector(FVector(-bladeCubeRadius.X, bladeCubeRadius.Y, bladeCubeRadius.Z));	//Forward Top Right
-	definedShape[1] = rot.RotateVector(FVector(-bladeCubeRadius.X, bladeCubeRadius.Y, -bladeCubeRadius.Z));	//Forward Bottom Right
-	definedShape[2] = rot.RotateVector(FVector(-bladeCubeRadius.X, -bladeCubeRadius.Y, bladeCubeRadius.Z));	//Forward Top Left
-	definedShape[3] = rot.RotateVector(FVector(-bladeCubeRadius.X, -bladeCubeRadius.Y, -bladeCubeRadius.Z));//Forward Bottom Left
+		definedShape[0] = rot.RotateVector(FVector(-bladeCubeRadius.X, bladeCubeRadius.Y, bladeCubeRadius.Z));	//Forward Top Right
+		definedShape[1] = rot.RotateVector(FVector(-bladeCubeRadius.X, bladeCubeRadius.Y, -bladeCubeRadius.Z));	//Forward Bottom Right
+		definedShape[2] = rot.RotateVector(FVector(-bladeCubeRadius.X, -bladeCubeRadius.Y, bladeCubeRadius.Z));	//Forward Top Left
+		definedShape[3] = rot.RotateVector(FVector(-bladeCubeRadius.X, -bladeCubeRadius.Y, -bladeCubeRadius.Z));//Forward Bottom Left
 
-	definedShape[4] = rot.RotateVector(FVector(bladeCubeRadius.X, -bladeCubeRadius.Y, bladeCubeRadius.Z));	//Reverse Top Right
-	definedShape[5] = rot.RotateVector(FVector(bladeCubeRadius.X, -bladeCubeRadius.Y, -bladeCubeRadius.Z));	//Reverse Bottom Right
-	definedShape[6] = rot.RotateVector(FVector(bladeCubeRadius.X, bladeCubeRadius.Y, bladeCubeRadius.Z));	//Reverse Top Left
-	definedShape[7] = rot.RotateVector(FVector(bladeCubeRadius.X, bladeCubeRadius.Y, -bladeCubeRadius.Z));	//Reverse Bottom Left
+		definedShape[4] = rot.RotateVector(FVector(bladeCubeRadius.X, -bladeCubeRadius.Y, bladeCubeRadius.Z));	//Reverse Top Right
+		definedShape[5] = rot.RotateVector(FVector(bladeCubeRadius.X, -bladeCubeRadius.Y, -bladeCubeRadius.Z));	//Reverse Bottom Right
+		definedShape[6] = rot.RotateVector(FVector(bladeCubeRadius.X, bladeCubeRadius.Y, bladeCubeRadius.Z));	//Reverse Top Left
+		definedShape[7] = rot.RotateVector(FVector(bladeCubeRadius.X, bladeCubeRadius.Y, -bladeCubeRadius.Z));	//Reverse Bottom Left
 
-	//Generate a cube using the defined shape array
-	GenerateSwordCube(definedShape);
-	
+		//Generate a cube using the defined shape array
+		GenerateSwordCube(definedShape);
+	}
+	else {
+		GeneratePrismBlade();
+	}
+
 	bladeVertices = vertices;
 	bladeTriangles = triangles;
 	bladeNormals = normals;
@@ -434,7 +459,7 @@ void APCGSword::GenerateTip()
 
 void APCGSword::GeneratePrismBlade()
 {
-	MeshReset();
+	//MeshReset();
 
 	int32 triangleIndexCount = 0;
 	FVector definedShape[8];
