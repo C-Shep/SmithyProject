@@ -132,7 +132,6 @@ public:
 	void GenerateGrip();
 	void GeneratePommel();
 	void GenerateTip();
-	void GeneratePrismTip();
 	void GeneratePrismBlade();
 
 	//Generates a cube based on the 8 vectors passed in 

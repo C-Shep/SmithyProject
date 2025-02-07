@@ -274,28 +274,21 @@ void APCGSword::GenerateMesh()
 	pommel->SetWorldLocation(grip->GetComponentLocation() - (FVector(0.f, 0.f, (gripCubeRadius.Z + pommelCubeRadius.Z))));
 
 	//------------------------------ Generate Tip Mesh, Modify it ------------------------------
-	tip->SetActive(true);
-	tip->SetVisibility(true);
-
-	//A number to multiply the horizontal size of the tip to match the size of the blade. I don't know why this needs to happen but it does.
-	float tipToBladeConstant = 1.415f;
-	
-	//Use the correct tip for hte correct sword
 	if (!isPrismBladeType)
 	{
 		GenerateTip();
+
+		tip->CreateMeshSection_LinearColor(0, tipVertices, tipTriangles, tipNormals, tipUvs, tipVertexColors, tipTangents, true);
+
+		//A number to multiply the horizontal size of the tip to match the size of the blade. I don't know why this needs to happen but it does.
+		const float tipToBladeConstant = 1.415f;
+		tip->SetRelativeScale3D(FVector(tipToBladeConstant, tipToBladeConstant, 1.f));
+		tip->SetWorldLocation(blade->GetComponentLocation() + (FVector(0.f, 0.f, (bladeCubeRadius.Z + tipCubeRadius.Z))));
 	}
-	else if(isPrismBladeType) {
-		GeneratePrismTip();
-		tipToBladeConstant = 1.f;
+	else {
+		tip->SetActive(false);
+		tip->SetVisibility(false);
 	}
-
-	tip->CreateMeshSection_LinearColor(0, tipVertices, tipTriangles, tipNormals, tipUvs, tipVertexColors, tipTangents, true);
-
-
-	tip->SetRelativeScale3D(FVector(tipToBladeConstant, tipToBladeConstant, 1.f));
-	tip->SetWorldLocation(blade->GetComponentLocation() + (FVector(0.f, 0.f, (bladeCubeRadius.Z + tipCubeRadius.Z))));
-
 	//------------------------------ Generate Prism Blade Mesh, Modify it ------------------------------
 	//GeneratePrismBlade();
 
@@ -461,41 +454,6 @@ void APCGSword::GenerateTip()
 	//Front Right
 	tangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
 	AddTriangleMesh(definedShape[3], definedShape[4], definedShape[2], triangleIndexCount, tangentSetup);
-
-	tipVertices = vertices;
-	tipTriangles = triangles;
-	tipNormals = normals;
-	tipUvs = uvs;
-	tipVertexColors = vertexColors;
-	tipTangents = tangents;
-}
-
-void APCGSword::GeneratePrismTip()
-{
-	MeshReset();
-
-	int32 triangleIndexCount = 0;
-	FVector definedShape[4];
-	FProcMeshTangent tangentSetup;
-
-	definedShape[0] = FVector(-tipCubeRadius.X, 0.f, -tipCubeRadius.Z);	//Middle Left
-	definedShape[1] = FVector(tipCubeRadius.X, tipCubeRadius.Y, -tipCubeRadius.Z);	//Forward Right
-	definedShape[2] = FVector(tipCubeRadius.X, -tipCubeRadius.Y, -tipCubeRadius.Z);	//Back Right
-	definedShape[3] = FVector(tipCubeRadius.X, 0.f, tipCubeRadius.Z); //Top
-
-	//Dont use generateSwordCube for this one, its not a cube its a pyramid prism thing. geometry is for nerds
-
-	//Front
-	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
-	AddTriangleMesh(definedShape[0], definedShape[1], definedShape[3], triangleIndexCount, tangentSetup);
-
-	///Back
-	tangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
-	AddTriangleMesh(definedShape[2], definedShape[0], definedShape[3], triangleIndexCount, tangentSetup);
-
-	//Right
-	tangentSetup = FProcMeshTangent(1.f, 0.0f, 0.0f);
-	AddTriangleMesh(definedShape[1], definedShape[2], definedShape[3], triangleIndexCount, tangentSetup);
 
 	tipVertices = vertices;
 	tipTriangles = triangles;
