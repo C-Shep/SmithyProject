@@ -131,7 +131,7 @@ void APCGCube::GenerateMesh()
 	blade->CreateMeshSection_LinearColor(0, vertices, triangles, normals, uvs, vertexColors, tangents, true);
 
 	//Modify the Blade's Transform to look... uh... blade-like
-	blade->SetWorldRotation(FRotator(0.f, 90.f,0.f));
+	//blade->SetWorldRotation(FRotator(0.f, 90.f,0.f));
 	blade->SetRelativeScale3D(FVector(girth, width, 1));
 }
 

@@ -220,10 +220,10 @@ void APCGSword::GenerateMesh()
 
 	//------------------------------ Modify the Blade's Transform to look... uh... blade-like ------------------------------
 	blade->CreateMeshSection_LinearColor(0, bladeVertices, bladeTriangles, bladeNormals, bladeUvs, bladeVertexColors, bladeTangents, true);
-
+	blade->SetWorldRotation(FRotator(0.f, 0.f, 0.f));	//if normal blade, rotate so its
 	if (!isPrismBladeType)
 	{
-		blade->SetWorldRotation(FRotator(0.f, 90.f, 0.f));	//if normal blade, rotate so its 
+		blade->SetWorldRotation(FRotator(0.f, 90.f, 0.f));	//if normal blade, rotate so its
 		blade->SetRelativeScale3D(FVector(girth, width, 1.f));
 	}
 	else {
@@ -274,15 +274,21 @@ void APCGSword::GenerateMesh()
 	pommel->SetWorldLocation(grip->GetComponentLocation() - (FVector(0.f, 0.f, (gripCubeRadius.Z + pommelCubeRadius.Z))));
 
 	//------------------------------ Generate Tip Mesh, Modify it ------------------------------
-	GenerateTip();
+	if (!isPrismBladeType)
+	{
+		GenerateTip();
 
-	tip->CreateMeshSection_LinearColor(0, tipVertices, tipTriangles, tipNormals, tipUvs, tipVertexColors, tipTangents, true);
+		tip->CreateMeshSection_LinearColor(0, tipVertices, tipTriangles, tipNormals, tipUvs, tipVertexColors, tipTangents, true);
 
-	//A number to multiply the horizontal size of the tip to match the size of the blade. I don't know why this needs to happen but it does.
-	const float tipToBladeConstant = 1.415f;
-	tip->SetRelativeScale3D(FVector(tipToBladeConstant, tipToBladeConstant, 1.f));
-	tip->SetWorldLocation(blade->GetComponentLocation() + (FVector(0.f, 0.f, (bladeCubeRadius.Z + tipCubeRadius.Z))));
-
+		//A number to multiply the horizontal size of the tip to match the size of the blade. I don't know why this needs to happen but it does.
+		const float tipToBladeConstant = 1.415f;
+		tip->SetRelativeScale3D(FVector(tipToBladeConstant, tipToBladeConstant, 1.f));
+		tip->SetWorldLocation(blade->GetComponentLocation() + (FVector(0.f, 0.f, (bladeCubeRadius.Z + tipCubeRadius.Z))));
+	}
+	else {
+		tip->SetActive(false);
+		tip->SetVisibility(false);
+	}
 	//------------------------------ Generate Prism Blade Mesh, Modify it ------------------------------
 	//GeneratePrismBlade();
 
