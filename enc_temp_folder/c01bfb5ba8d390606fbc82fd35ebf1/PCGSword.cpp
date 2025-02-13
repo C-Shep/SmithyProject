@@ -487,7 +487,7 @@ void APCGSword::GeneratePrismTip()
 	AddTriangleMesh(definedShape[2], definedShape[0], definedShape[3], triangleIndexCount, tangentSetup);
 
 	//Right
-	tangentSetup = FProcMeshTangent(1.f, 1.0f, 1.0f);
+	tangentSetup = FProcMeshTangent(1.f, 0.0f, 0.0f);
 	AddTriangleMesh(definedShape[1], definedShape[2], definedShape[3], triangleIndexCount, tangentSetup);
 
 	tipVertices = vertices;
@@ -579,18 +579,17 @@ void APCGSword::AddTriangleMesh(FVector topRight, FVector bottomRight, FVector b
 	triangles.Add(point2);
 	triangles.Add(point3);
 
-	
+	FVector thisNorm = FVector::CrossProduct(bottomRight,topRight).GetSafeNormal();
 	for (int i = 0; i < 3; i++)
 	{
-		FVector thisNorm = FVector::CrossProduct(topRight - bottomLeft, topRight - bottomRight).GetSafeNormal();
 		normals.Add(thisNorm);
 		tangents.Add(tangent);
 		vertexColors.Add(FLinearColor::Red);
 	}
 
 	uvs.Add(FVector2D(1.0f, 1.0f));//Top Right
-	uvs.Add(FVector2D(-1.0f, 1.0f));//Bottom Right
-	uvs.Add(FVector2D(-1.0f, -1.0f));//Bottom Left
+	uvs.Add(FVector2D(0.0f, 1.0f));//Bottom Right
+	uvs.Add(FVector2D(0.0f, 0.0f));//Bottom Left
 	
 }
 
