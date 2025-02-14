@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "PCGSword.h"
+#include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 #include "SwordSpawner.generated.h"
 
@@ -23,6 +25,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class APCGSword> swordBpClass;
 
 	AActor* spawnedSword;
 

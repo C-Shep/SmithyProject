@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "PCGSword.h"
+#include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 #include "SwordSpawner.generated.h"
 
@@ -26,7 +27,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<APCGSword> swordBpClass;
+	TSubclassOf<class APCGSword> swordBpClass;
+
+	UPROPERTY(EditAnywhere)
+	float heightSlider;
 
 	AActor* spawnedSword;
 

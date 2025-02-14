@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "SwordSpawner.h"
-#include "PCGSword.h"
+
 
 
 // Sets default values
@@ -20,7 +20,10 @@ void ASwordSpawner::BeginPlay()
 	{
 		FActorSpawnParameters SpawnInfo;
 		FVector swordSpawnPos = FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z);	//Get spawn point
-		spawnedSword = World->SpawnActor<APCGSword>(swordSpawnPos, GetActorRotation(), SpawnInfo);	//Spawn Sword
+		//APCGSword* mySword = World->SpawnActor<APCGSword>(swordBpClass, swordSpawnPos, GetActorRotation(), SpawnInfo); //Spawn Sword
+		APCGSword* mySword = World->SpawnActorDeferred<APCGSword>(swordBpClass, GetActorTransform(),GetOwner()); //Spawn Sword
+		mySword->SetBladeAttributes(400.f,700.f);
+		UGameplayStatics::FinishSpawningActor(mySword, mySword->GetTransform());
 	}
 	
 }

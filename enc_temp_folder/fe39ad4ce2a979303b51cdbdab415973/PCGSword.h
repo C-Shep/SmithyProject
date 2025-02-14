@@ -163,11 +163,8 @@ public:
 	void AddQuadMesh(FVector topRight, FVector bottomRight, FVector topLeft, FVector bottomLeft, int32& triIndex, FProcMeshTangent tangent);
 
 	//Height
-	UPROPERTY(EditAnywhere)
 	float heightMin;
-	UPROPERTY(EditAnywhere)
 	float heightMax;
-
 	float randBladeType;
 
 	void SetBladeAttributes(float newMinHeight, float newMaxHeight);

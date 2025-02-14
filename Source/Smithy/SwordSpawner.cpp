@@ -8,7 +8,6 @@ ASwordSpawner::ASwordSpawner()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 // Called when the game starts or when spawned
@@ -20,7 +19,10 @@ void ASwordSpawner::BeginPlay()
 	{
 		FActorSpawnParameters SpawnInfo;
 		FVector swordSpawnPos = FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z);	//Get spawn point
-		APCGSword* mySword = World->SpawnActor<APCGSword>(swordBpClass, swordSpawnPos, GetActorRotation(), SpawnInfo); //Spawn Sword
+		//APCGSword* mySword = World->SpawnActor<APCGSword>(swordBpClass, swordSpawnPos, GetActorRotation(), SpawnInfo); //Spawn Sword
+		APCGSword* mySword = World->SpawnActorDeferred<APCGSword>(swordBpClass, GetActorTransform(),GetOwner()); //Spawn Sword
+		mySword->SetBladeAttributes(heightSlider-1.f, heightSlider+1.f);
+		UGameplayStatics::FinishSpawningActor(mySword, mySword->GetTransform());
 	}
 	
 }

@@ -74,7 +74,7 @@ APCGSword::APCGSword()
 void APCGSword::SetBladeAttributes(float newMinHeight, float newMaxHeight)
 {
 	heightMin = newMinHeight;
-	heightMax = newMaxHeight;
+	heightMin = newMaxHeight;
 }
 
 
@@ -82,14 +82,13 @@ void APCGSword::SetBladeAttributes(float newMinHeight, float newMaxHeight)
 void APCGSword::BeginPlay()
 {
 	Super::BeginPlay();
-	GenerateMesh();
 }
 
 void APCGSword::PostActorCreated()
 {
 	//Generate Mesh when created in level
 	Super::PostActorCreated();
-//	GenerateMesh();
+	GenerateMesh();
 }
 
 void APCGSword::PostLoad()
@@ -130,13 +129,15 @@ void APCGSword::GenerateMesh()
 	else {
 		isPrismBladeType = false;
 	}
+		
+	
 
 	//Size of the cube at base
 	const float cubeSizeMin = 5.f;
 	const float cubeSizeMax = 50.f;
 	const float randCubeSize = FMath::RandRange(cubeSizeMin, cubeSizeMax);
 
-	//Random height of the blade
+
 	randHeight = FMath::RandRange(heightMin, heightMax);
 
 	//Set size of cube to be the randomized parameters
