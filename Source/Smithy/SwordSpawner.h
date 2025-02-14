@@ -32,6 +32,18 @@ public:
 	UPROPERTY(EditAnywhere)
 	float heightSlider;
 
+	UPROPERTY(EditAnywhere)
+	float heightVariety;
+
+	UPROPERTY(EditAnywhere)
+	float widthSlider;
+
+	UPROPERTY(EditAnywhere)
+	float widthVariety;
+
+	UPROPERTY(EditAnywhere)
+	bool isPrismBlade;
+
 	AActor* spawnedSword;
 
 };

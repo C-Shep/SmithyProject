@@ -162,13 +162,19 @@ public:
 	void AddTriangleMesh(FVector topRight, FVector bottomRight, FVector bottomLeft, int32& triIndex, FProcMeshTangent tangent);
 	void AddQuadMesh(FVector topRight, FVector bottomRight, FVector topLeft, FVector bottomLeft, int32& triIndex, FProcMeshTangent tangent);
 
-	//Height
-	UPROPERTY(EditAnywhere)
+	//Blade Height
 	float heightMin;
-	UPROPERTY(EditAnywhere)
 	float heightMax;
 
+	//Blade Width
+	float cubeSizeMin;
+	float cubeSizeMax;
+
+	//Blade Type
 	float randBladeType;
 
-	void SetBladeAttributes(float newMinHeight, float newMaxHeight);
+	UPROPERTY(EditAnywhere)
+	float randCubeSize;
+
+	void SetBladeAttributes(float newMinHeight, float newMaxHeight, float newMinWidth, float newMaxWidth, bool isPrismBlade);
 };

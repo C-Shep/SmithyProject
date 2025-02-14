@@ -71,10 +71,15 @@ APCGSword::APCGSword()
 	guardGirthMultiMax = 1.f;
 }
 
-void APCGSword::SetBladeAttributes(float newMinHeight, float newMaxHeight)
+void APCGSword::SetBladeAttributes(float newMinHeight, float newMaxHeight, float newMinWidth, float newMaxWidth, bool isPrismBlade)
 {
 	heightMin = newMinHeight;
 	heightMax = newMaxHeight;
+
+	cubeSizeMin = newMinWidth;
+	cubeSizeMax = newMaxWidth;
+
+	isPrismBladeType = isPrismBlade;
 }
 
 
@@ -121,20 +126,19 @@ void APCGSword::GenerateMesh()
 	MeshReset();
 
 	//set blade type
-	randBladeType = FMath::RandRange(0, 1);
+	//randBladeType = FMath::RandRange(0, 1);
 
-	if (randBladeType == 1)
-	{
-		isPrismBladeType = true;
-	}
-	else {
-		isPrismBladeType = false;
-	}
+	//if (randBladeType == 1)
+	//{
+	//	isPrismBladeType = true;
+	//}
+	//else {
+	//	isPrismBladeType = false;
+	//}
 
 	//Size of the cube at base
-	const float cubeSizeMin = 5.f;
-	const float cubeSizeMax = 50.f;
-	const float randCubeSize = FMath::RandRange(cubeSizeMin, cubeSizeMax);
+
+	randCubeSize = FMath::RandRange(cubeSizeMin, cubeSizeMax);
 
 	//Random height of the blade
 	randHeight = FMath::RandRange(heightMin, heightMax);

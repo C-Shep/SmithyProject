@@ -8,11 +8,22 @@ ASwordSpawner::ASwordSpawner()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	//init vars
+	heightSlider = 100.f;
+
+	heightVariety = 75.f;
+
+	widthSlider = 25.f;
+
+	widthVariety = 20.f;
+
+	isPrismBlade = false;
 }
 
 // Called when the game starts or when spawned
 void ASwordSpawner::BeginPlay()
-{
+{	
 	Super::BeginPlay();
 
 	if (UWorld* World = GetWorld())	//if the world exists
@@ -20,8 +31,14 @@ void ASwordSpawner::BeginPlay()
 		FActorSpawnParameters SpawnInfo;
 		FVector swordSpawnPos = FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z);	//Get spawn point
 		//APCGSword* mySword = World->SpawnActor<APCGSword>(swordBpClass, swordSpawnPos, GetActorRotation(), SpawnInfo); //Spawn Sword
+
+		//Start the Deferred Spawn
 		APCGSword* mySword = World->SpawnActorDeferred<APCGSword>(swordBpClass, GetActorTransform(),GetOwner()); //Spawn Sword
-		mySword->SetBladeAttributes(heightSlider-1.f, heightSlider+1.f);
+
+		//Set the blades attributes
+		mySword->SetBladeAttributes(heightSlider - heightVariety, heightSlider + heightVariety,widthSlider - widthVariety,widthSlider + widthVariety, isPrismBlade);
+
+		//Stop the Deferred Spawn, Actually spawn the sword now
 		UGameplayStatics::FinishSpawningActor(mySword, mySword->GetTransform());
 	}
 	
