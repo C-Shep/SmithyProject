@@ -35,8 +35,22 @@ void ASwordSpawner::BeginPlay()
 		//Start the Deferred Spawn
 		APCGSword* mySword = World->SpawnActorDeferred<APCGSword>(swordBpClass, GetActorTransform(),GetOwner()); //Spawn Sword
 
+		//Blade Height Calculations & Clamping
+		float finalBladeHeightMin = heightSlider - heightVariety;
+		float finalBladeHeightMax = heightSlider + heightVariety;
+
+		if (finalBladeHeightMin < 1.f) finalBladeHeightMin = 1.f;
+		if (finalBladeHeightMax > 200.f) finalBladeHeightMax = 200.f;
+
+		//Blade Width Calculations & Clamping
+		float finalBladeWidthMin = widthSlider - widthVariety;
+		float finalBladeWidthMax = widthSlider + widthVariety;
+
+		if (finalBladeWidthMin < 1.f) finalBladeWidthMin = 1.f;
+		if (finalBladeWidthMax > 50.f) finalBladeWidthMax = 50.f;
+
 		//Set the blades attributes
-		mySword->SetBladeAttributes(heightSlider - heightVariety, heightSlider + heightVariety,widthSlider - widthVariety,widthSlider + widthVariety, isPrismBlade);
+		mySword->SetBladeAttributes(finalBladeHeightMin, finalBladeHeightMax, finalBladeWidthMin, finalBladeWidthMax, isPrismBlade);
 
 		//Stop the Deferred Spawn, Actually spawn the sword now
 		UGameplayStatics::FinishSpawningActor(mySword, mySword->GetTransform());
