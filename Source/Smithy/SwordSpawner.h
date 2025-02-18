@@ -42,6 +42,24 @@ public:
 	float widthVariety;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float guardWidthSlider;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float guardWidthVariety;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float gripHeightSlider;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float gripHeightVariety;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float pommelSizeSlider;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float pommelSizeVariety;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool isPrismBlade;
 
 	AActor* spawnedSword;

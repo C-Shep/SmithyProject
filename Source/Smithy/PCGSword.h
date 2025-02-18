@@ -43,8 +43,9 @@ public:
 	float guardGirthMultiMin;
 	float guardWidthMultiMin;
 
-	//Max number the size multiplier of the guard girth can be
+	//Max number the size multiplier of the guard girth and width can be
 	float guardGirthMultiMax;
+	float guardWidthMultiMax;
 
 	//------ Grip Variables ------
 	//Size of Grip
@@ -170,11 +171,27 @@ public:
 	float cubeSizeMin;
 	float cubeSizeMax;
 
+	//Guard Width
+	float guardWidthMin;
+	float guardWidthMax;
+
+	float guardWidthMultiplier;
+
+	//Grip Height
+	float gripHeightMin;
+	float gripHeightMax;
+
+	//Pommel Size
+	float pommelWidthMin;
+	float pommelWidthMax;
+
 	//Blade Type
 	float randBladeType;
 
 	UPROPERTY(EditAnywhere)
 	float randCubeSize;
 
-	void SetBladeAttributes(float newMinHeight, float newMaxHeight, float newMinWidth, float newMaxWidth, bool isPrismBlade);
+
+
+	void SetBladeAttributes(float newMinBladeH, float newMaxBladeH, float newMinBladeW, float newMaxBladeW, float newGuardMulti, float newMinGuardW, float newMaxGuardW, float newMinGripH, float newMaxGripH, float newMinPommelSize, float newMaxPommelSize, bool isPrismBlade);
 };

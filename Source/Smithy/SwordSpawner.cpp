@@ -18,6 +18,18 @@ ASwordSpawner::ASwordSpawner()
 
 	widthVariety = 20.f;
 
+	guardWidthSlider = 28.f;
+
+	guardWidthVariety = 0.f;
+
+	gripHeightSlider = 25.f;
+
+	gripHeightVariety = 0.f;
+
+	pommelSizeSlider = 6.f;
+
+	pommelSizeVariety = 0.f;
+
 	isPrismBlade = false;
 }
 
@@ -35,22 +47,45 @@ void ASwordSpawner::BeginPlay()
 		//Start the Deferred Spawn
 		APCGSword* mySword = World->SpawnActorDeferred<APCGSword>(swordBpClass, GetActorTransform(),GetOwner()); //Spawn Sword
 
-		//Blade Height Calculations & Clamping
+		//Blade Height Calculations & Clamping ---------------------------------------------------------------------
 		float finalBladeHeightMin = heightSlider - heightVariety;
 		float finalBladeHeightMax = heightSlider + heightVariety;
 
 		if (finalBladeHeightMin < 1.f) finalBladeHeightMin = 1.f;
 		if (finalBladeHeightMax > 200.f) finalBladeHeightMax = 200.f;
 
-		//Blade Width Calculations & Clamping
+		//Blade Width Calculations & Clamping ---------------------------------------------------------------------
 		float finalBladeWidthMin = widthSlider - widthVariety;
 		float finalBladeWidthMax = widthSlider + widthVariety;
 
 		if (finalBladeWidthMin < 1.f) finalBladeWidthMin = 1.f;
 		if (finalBladeWidthMax > 50.f) finalBladeWidthMax = 50.f;
 
+		//Guard Width Calculations & Clamping ---------------------------------------------------------------------
+		float finalGuardWidthMin = guardWidthSlider - guardWidthVariety;
+		float finalGuardWidthMax = guardWidthSlider + guardWidthVariety;
+
+		if (guardWidthSlider < widthSlider) guardWidthSlider = widthSlider;
+
+		if (finalGuardWidthMin < 10.f) finalGuardWidthMin = 10.f;
+		//if (finalGuardWidthMin > finalBladeHeightMax) finalGuardWidthMin = finalBladeHeightMax;
+
+		float guardMulti = (widthSlider * 50) / 100;
+
+		//Grip Width Calculations & Clamping ---------------------------------------------------------------------
+		float finalGripHeightMin = gripHeightSlider - gripHeightVariety;
+		float finalGripHeightMax = gripHeightSlider + gripHeightVariety;
+
+		if (finalGripHeightMin < 4.f) finalGripHeightMin = 4.f;
+
+		//Pommel Width Calculations & Clamping ---------------------------------------------------------------------
+		float finalPommelSizeMin = pommelSizeSlider - pommelSizeVariety;
+		float finalPommelSizeMax = pommelSizeSlider + pommelSizeVariety;
+
+		if (finalPommelSizeMin < 1.f) finalPommelSizeMin = 1.f;
+
 		//Set the blades attributes
-		mySword->SetBladeAttributes(finalBladeHeightMin, finalBladeHeightMax, finalBladeWidthMin, finalBladeWidthMax, isPrismBlade);
+		mySword->SetBladeAttributes(finalBladeHeightMin, finalBladeHeightMax, finalBladeWidthMin, finalBladeWidthMax, guardMulti, finalGuardWidthMin, finalGuardWidthMax, finalGripHeightMin, finalGripHeightMax, finalPommelSizeMin, finalPommelSizeMax, isPrismBlade);
 
 		//Stop the Deferred Spawn, Actually spawn the sword now
 		UGameplayStatics::FinishSpawningActor(mySword, mySword->GetTransform());

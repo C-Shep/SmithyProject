@@ -38,14 +38,14 @@ APCGSword::APCGSword()
 	blade->SetupAttachment(sceneComponent);
 	blade->SetRelativeLocation(sceneComponent->GetComponentLocation());
 
-	guard->SetupAttachment(blade);
-	guard->SetRelativeLocation(blade->GetComponentLocation());
+	guard->SetupAttachment(sceneComponent);
+	guard->SetRelativeLocation(sceneComponent->GetComponentLocation());
 
-	grip->SetupAttachment(guard);
-	grip->SetRelativeLocation(guard->GetComponentLocation());
+	grip->SetupAttachment(sceneComponent);
+	grip->SetRelativeLocation(sceneComponent->GetComponentLocation());
 
-	pommel->SetupAttachment(grip);
-	pommel->SetRelativeLocation(grip->GetComponentLocation());
+	pommel->SetupAttachment(sceneComponent);
+	pommel->SetRelativeLocation(sceneComponent->GetComponentLocation());
 
 	tip->SetupAttachment(blade);
 	tip->SetRelativeLocation(blade->GetComponentLocation());
@@ -67,21 +67,38 @@ APCGSword::APCGSword()
 	//Z = height			(Height)
 
 	guardGirthMultiMin = 0.6;
-	guardWidthMultiMin = 0.8;
 	guardGirthMultiMax = 1.f;
+
+	guardWidthMultiMin = 0.8;
+	guardWidthMultiMin = 1.5;
 }
 
-void APCGSword::SetBladeAttributes(float newMinHeight, float newMaxHeight, float newMinWidth, float newMaxWidth, bool isPrismBlade)
+void APCGSword::SetBladeAttributes(float newMinBladeH, float newMaxBladeH, float newMinBladeW, float newMaxBladeW, float newGuardMulti, float newMinGuardW, float newMaxGuardW, float newMinGripH, float newMaxGripH, float newMinPommelSize, float newMaxPommelSize, bool isPrismBlade)
 {
-	heightMin = newMinHeight;
-	heightMax = newMaxHeight;
+	//Blade H
+	heightMin = newMinBladeH;
+	heightMax = newMaxBladeH;
 
-	cubeSizeMin = newMinWidth;
-	cubeSizeMax = newMaxWidth;
+	//Blade W
+	cubeSizeMin = newMinBladeW;
+	cubeSizeMax = newMaxBladeW;
+
+	//Guard Width
+	guardWidthMin = newMinGuardW;
+	guardWidthMax = newMaxGuardW;
+
+	guardWidthMultiplier = newGuardMulti;
+
+	//Grip Height
+	gripHeightMin = newMinGripH;
+	gripHeightMax = newMaxGripH;
+
+	//Pommel Size
+	pommelWidthMin = newMinPommelSize;
+	pommelWidthMax = newMaxPommelSize;
 
 	isPrismBladeType = isPrismBlade;
 }
-
 
 // Called when the game starts or when spawned
 void APCGSword::BeginPlay()
@@ -150,8 +167,8 @@ void APCGSword::GenerateMesh()
 
 	//Width
 	//Set random width for use later after the cube is created
-	const float widthMin = 0.2f;
-	const float widthMax = 1.3f;
+	const float widthMin = 0.5f;
+	const float widthMax = 1.1f;
 	width = FMath::RandRange(widthMin, widthMax);
 
 	//Girth
@@ -163,21 +180,24 @@ void APCGSword::GenerateMesh()
 	/// --------------------- Guard Attributes ---------------------
 
 	//Guard Width
-	const float guardWidthMin = randCubeSize + (randCubeSize / 7);
-	const float guardWidthMax = randCubeSize + (randCubeSize / 5);
-	const float guardWidth = FMath::RandRange(guardWidthMin, guardWidthMax);
+	//const float guardWidthMin = randCubeSize + (randCubeSize / 7);
+	//const float guardWidthMax = randCubeSize + (randCubeSize / 5);
+	float guardWidth = FMath::RandRange(guardWidthMin, guardWidthMax);
+
+	//if (guardWidth < (randCubeSize*width)) guardWidth = (randCubeSize / width);
 
 	//Girth Girth
-	const float guardGirthMin = randCubeSize + (guardWidthMin / 4.f);
-	const float guardGirthMax = randCubeSize + (guardWidthMax / 2.f);
-	const float guardGirth = FMath::RandRange(guardWidthMin, guardWidthMax);
+	const float guardGirthMin = guardWidth;
+	const float guardGirthMax = guardWidth;
+	const float guardGirth = FMath::RandRange(guardGirthMin, guardGirthMax);
 
 	//Height
 	const float guardHeightMin = 3.f;
 	const float guardHeightMax = 4.f;
 	const float guardHeight = FMath::RandRange(guardHeightMin, guardHeightMax);
 
-	guardCubeRadius = FVector(guardWidth, guardGirth, guardHeight);
+	//X is towards camera, Y is left and right
+	guardCubeRadius = FVector(guardGirth, guardWidth, guardHeight);
 
 	/// --------------------- Grip Attributes ---------------------
 
@@ -187,8 +207,8 @@ void APCGSword::GenerateMesh()
 	const float gripWidth = FMath::RandRange(gripWidthMin, gripWidthMax);
 
 	//Grip Height
-	const float gripHeightMin = 15;
-	const float gripHeightMax = 35;
+	//const float gripHeightMin = 15;
+	//const float gripHeightMax = 35;
 	const float gripHeight = FMath::RandRange(gripHeightMin, gripHeightMax);
 
 	gripCubeRadius = FVector(gripWidth, gripWidth, gripHeight);
@@ -196,13 +216,13 @@ void APCGSword::GenerateMesh()
 	/// --------------------- Pommel Attributes ---------------------
 	
 	//Pommel Width
-	const float pommelWidthMin = gripWidth+1.f;
-	const float pommelWidthMax = gripWidth+2.f;
+	//const float pommelWidthMin = gripWidth+1.f;
+	//const float pommelWidthMax = gripWidth+2.f;
 	const float pommelWidth = FMath::RandRange(pommelWidthMin, pommelWidthMax);
 
 	//Pommel Height
-	const float pommelHeightMin = pommelWidthMin-1.f;
-	const float pommelHeightMax = pommelWidthMax;
+	const float pommelHeightMin = pommelWidth;
+	const float pommelHeightMax = pommelWidth;
 	const float pommelHeight = FMath::RandRange(pommelHeightMin, pommelHeightMax);
 
 	pommelCubeRadius = FVector(pommelWidth, pommelWidth, pommelHeight);
@@ -231,7 +251,7 @@ void APCGSword::GenerateMesh()
 	blade->SetWorldRotation(FRotator(0.f, 0.f, 0.f));	//if normal blade, rotate so its
 	if (!isPrismBladeType)
 	{
-		blade->SetWorldRotation(FRotator(0.f, 90.f, 0.f));	//if normal blade, rotate so its
+		blade->SetWorldRotation(FRotator(0.f, 90.f, 0.f));	//if normal blade, rotate so its diamond
 		blade->SetRelativeScale3D(FVector(girth, width, 1.f));
 	}
 	else {
@@ -245,24 +265,13 @@ void APCGSword::GenerateMesh()
 	guard->CreateMeshSection_LinearColor(0, guardVertices, guardTriangles, guardNormals, guardUvs, guardVertexColors, guardTangents, true);
 
 	//clamp size of guard. girth to 0.6 as it should be smaller, width to 0.8 as it should be longer. - These are magic number and should be changed
-	float guardGirthMulti = girth;
-	if (guardGirthMulti < guardGirthMultiMin)
-	{
-		guardGirthMulti = guardGirthMultiMin;
-	}
+	float guardGirthMulti = guardWidthMultiplier;
+	float guardWidthMulti = guardWidthMultiplier;
 
-	if (guardGirthMulti > guardGirthMultiMax)
-	{
-		guardGirthMulti = guardGirthMultiMax;
-	}
+	//guard->SetRelativeScale3D(FVector(guardGirthMulti * 2, guardWidthMulti + 3.f, 1.f));	//magic number, ill fix this later
 
-	float guardWidthMulti = width;
-	if (guardWidthMulti < guardWidthMultiMin)
-	{
-		guardWidthMulti = guardWidthMultiMin;
-	}
-	
-	guard->SetRelativeScale3D(FVector(guardGirthMulti * 3, guardWidthMulti * 2, 1.f));	//magic number, ill fix this later
+	//X is towards camera, Y is left and right
+	guard->SetRelativeScale3D(FVector(1.f, 2.f, 1.f));
 	guard->SetWorldLocation(blade->GetComponentLocation() - (FVector(0.f,0.f, (bladeCubeRadius.Z + guardCubeRadius.Z))));
 
 	//------------------------------ Generate Grip Mesh, Modify it ------------------------------
@@ -270,7 +279,7 @@ void APCGSword::GenerateMesh()
 	
 	grip->CreateMeshSection_LinearColor(0, gripVertices, gripTriangles, gripNormals, gripUvs, gripVertexColors, gripTangents, true);
 	
-	grip->SetRelativeScale3D(FVector(1.f, 0.6f, 1.f));
+	grip->SetRelativeScale3D(FVector(0.9f, 0.8f, 1.f));
 	grip->SetWorldLocation(guard->GetComponentLocation() - (FVector(0.f, 0.f, (guardCubeRadius.Z + gripCubeRadius.Z))));
 
 	//------------------------------ Generate Pommel Mesh, Modify it ------------------------------
@@ -278,7 +287,7 @@ void APCGSword::GenerateMesh()
 
 	pommel->CreateMeshSection_LinearColor(0, pommelVertices, pommelTriangles, pommelNormals, pommelUvs, pommelVertexColors, pommelTangents, true);
 
-	pommel->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
+	pommel->SetRelativeScale3D(FVector(1.3f, 1.3f, 1.f));
 	pommel->SetWorldLocation(grip->GetComponentLocation() - (FVector(0.f, 0.f, (gripCubeRadius.Z + pommelCubeRadius.Z))));
 
 	//------------------------------ Generate Tip Mesh, Modify it ------------------------------
