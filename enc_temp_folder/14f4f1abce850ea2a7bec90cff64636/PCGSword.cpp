@@ -184,11 +184,11 @@ void APCGSword::GenerateMesh()
 	//const float guardWidthMax = randCubeSize + (randCubeSize / 5);
 	float guardWidth = FMath::RandRange(guardWidthMin, guardWidthMax);
 
-	if (guardWidth < (randCubeSize - (randCubeSize/2))) guardWidth = randCubeSize - (randCubeSize / 2);
+	//if (guardWidth < (randCubeSize*width)) guardWidth = (randCubeSize / width);
 
 	//Girth Girth
-	const float guardGirthMin = randCubeSize;
-	const float guardGirthMax = randCubeSize;
+	const float guardGirthMin = guardWidth;
+	const float guardGirthMax = guardWidth;
 	const float guardGirth = FMath::RandRange(guardGirthMin, guardGirthMax);
 
 	//Height
@@ -271,19 +271,15 @@ void APCGSword::GenerateMesh()
 	//guard->SetRelativeScale3D(FVector(guardGirthMulti * 2, guardWidthMulti + 3.f, 1.f));	//magic number, ill fix this later
 
 	//X is towards camera, Y is left and right
-	float matGuardScale = FMath::RandRange(-0.05f, 0.05f);
-
-	guard->SetRelativeScale3D(FVector(1.f + matGuardScale, 2.f + matGuardScale, 1.f + matGuardScale));
+	guard->SetRelativeScale3D(FVector(1.f, 2.f, 1.f));
 	guard->SetWorldLocation(blade->GetComponentLocation() - (FVector(0.f,0.f, (bladeCubeRadius.Z + guardCubeRadius.Z))));
 
 	//------------------------------ Generate Grip Mesh, Modify it ------------------------------
 	GenerateGrip();
 	
-	float matGripScale = FMath::RandRange(-0.05f, 0.05f);
-
 	grip->CreateMeshSection_LinearColor(0, gripVertices, gripTriangles, gripNormals, gripUvs, gripVertexColors, gripTangents, true);
 	
-	grip->SetRelativeScale3D(FVector(0.9f+ matGripScale, 0.8f + matGripScale, 1.f));
+	grip->SetRelativeScale3D(FVector(0.9f, 0.8f, 1.f));
 	grip->SetWorldLocation(guard->GetComponentLocation() - (FVector(0.f, 0.f, (guardCubeRadius.Z + gripCubeRadius.Z))));
 
 	//------------------------------ Generate Pommel Mesh, Modify it ------------------------------
