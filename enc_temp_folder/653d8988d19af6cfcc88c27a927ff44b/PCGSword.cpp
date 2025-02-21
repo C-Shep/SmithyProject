@@ -184,11 +184,11 @@ void APCGSword::GenerateMesh()
 	//const float guardWidthMax = randCubeSize + (randCubeSize / 5);
 	float guardWidth = FMath::RandRange(guardWidthMin, guardWidthMax);
 
-	//if (guardWidth < (randCubeSize*width)) guardWidth = (randCubeSize / width);
+	if (guardWidth < (randCubeSize - (randCubeSize/2))) guardWidth = randCubeSize - (randCubeSize / 2);
 
 	//Girth Girth
-	const float guardGirthMin = guardWidth;
-	const float guardGirthMax = guardWidth;
+	const float guardGirthMin = randCubeSize;
+	const float guardGirthMax = randCubeSize;
 	const float guardGirth = FMath::RandRange(guardGirthMin, guardGirthMax);
 
 	//Height
@@ -271,15 +271,19 @@ void APCGSword::GenerateMesh()
 	//guard->SetRelativeScale3D(FVector(guardGirthMulti * 2, guardWidthMulti + 3.f, 1.f));	//magic number, ill fix this later
 
 	//X is towards camera, Y is left and right
-	guard->SetRelativeScale3D(FVector(1.f, 2.f, 1.f));
+	float matGuardScale = FMath::RandRange(-0.05f, 0.05f);
+
+	guard->SetRelativeScale3D(FVector(1.f + matGuardScale, 2.f + matGuardScale, 1.f + matGuardScale));
 	guard->SetWorldLocation(blade->GetComponentLocation() - (FVector(0.f,0.f, (bladeCubeRadius.Z + guardCubeRadius.Z))));
 
 	//------------------------------ Generate Grip Mesh, Modify it ------------------------------
 	GenerateGrip();
 	
+	float matGripScale = FMath::RandRange(-0.05f, 0.05f);
+
 	grip->CreateMeshSection_LinearColor(0, gripVertices, gripTriangles, gripNormals, gripUvs, gripVertexColors, gripTangents, true);
 	
-	grip->SetRelativeScale3D(FVector(0.9f, 0.8f, 1.f));
+	grip->SetRelativeScale3D(FVector(0.9f+ matGripScale, 0.8f + matGripScale, 1.f));
 	grip->SetWorldLocation(guard->GetComponentLocation() - (FVector(0.f, 0.f, (guardCubeRadius.Z + gripCubeRadius.Z))));
 
 	//------------------------------ Generate Pommel Mesh, Modify it ------------------------------
@@ -321,7 +325,7 @@ void APCGSword::GenerateBlade()
 	MeshReset();
 
 	int32 triangleIndexCount = 0;
-	FVector definedShape[8];
+	FVector definedShape[9];
 	FProcMeshTangent tangentSetup;
 
 	if (!isPrismBladeType)
@@ -337,9 +341,15 @@ void APCGSword::GenerateBlade()
 		definedShape[5] = rot.RotateVector(FVector(bladeCubeRadius.X, -bladeCubeRadius.Y, -bladeCubeRadius.Z));	//Reverse Bottom Right
 		definedShape[6] = rot.RotateVector(FVector(bladeCubeRadius.X, bladeCubeRadius.Y, bladeCubeRadius.Z));	//Reverse Top Left
 		definedShape[7] = rot.RotateVector(FVector(bladeCubeRadius.X, bladeCubeRadius.Y, -bladeCubeRadius.Z));	//Reverse Bottom Left
+		
 
 		//Generate a cube using the defined shape array
 		GenerateSwordCube(definedShape);
+
+		definedShape[8] = FVector(0.f, 0.f, bladeCubeRadius.Z);	//Tip of Sword
+		//Right
+		tangentSetup = FProcMeshTangent(1.f, 1.0f, 1.0f);
+		AddTriangleMesh(definedShape[0], definedShape[2], definedShape[7], triangleIndexCount, tangentSetup);
 	}
 	else {
 		GeneratePrismBlade();
