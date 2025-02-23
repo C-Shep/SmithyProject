@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "Math/Vector.h"
+#include "EngineGlobals.h"
 #include "PCGSword.h"
 
 // Sets default values
@@ -217,7 +218,7 @@ void APCGSword::GenerateMesh()
 	
 	//Pommel Width
 	//const float pommelWidthMin = gripWidth+1.f;
-	//const float pommelWidthMax = gripWidth+2.f;
+	//const float pommelWidthMax = gripWidth+2.f; 
 	const float pommelWidth = FMath::RandRange(pommelWidthMin, pommelWidthMax);
 
 	//Pommel Height
@@ -234,12 +235,19 @@ void APCGSword::GenerateMesh()
 
 	tipCubeRadius = FVector(tipSize, tipSize, tipSize);
 
-	/// --------------------- Tip Attributes ---------------------
+	/// --------------------- Prism Attributes ---------------------
 
-	//Tip Size, same lenght on all sides for now
+	//Prism Size, same lenght on all sides for now
 	const float prismSize = randCubeSize;
 
 	prismCubeRadius = FVector(prismSize, prismSize, randHeight);
+
+	/// --------------------- Curve Attributes ---------------------
+
+	//Prism Size, same lenght on all sides for now
+	const float curveSize = randCubeSize;
+
+	curveCubeRadius = FVector(curveSize, curveSize, randHeight);
 
 	//------------------------------ Fill the Mesh Variables with Mesh Data ------------------------------
 	GenerateBlade();
@@ -324,12 +332,14 @@ void APCGSword::GenerateBlade()
 {
 	MeshReset();
 
-	int32 triangleIndexCount = 0;
-	FVector definedShape[9];
-	FProcMeshTangent tangentSetup;
+
 
 	if (!isPrismBladeType)
 	{
+		int32 triangleIndexCount = 0;
+		FVector definedShape[8];
+		FProcMeshTangent tangentSetup;
+
 		const FRotator rot(0, 45, 0);
 
 		definedShape[0] = rot.RotateVector(FVector(-bladeCubeRadius.X, bladeCubeRadius.Y, bladeCubeRadius.Z));	//Forward Top Right
@@ -341,18 +351,13 @@ void APCGSword::GenerateBlade()
 		definedShape[5] = rot.RotateVector(FVector(bladeCubeRadius.X, -bladeCubeRadius.Y, -bladeCubeRadius.Z));	//Reverse Bottom Right
 		definedShape[6] = rot.RotateVector(FVector(bladeCubeRadius.X, bladeCubeRadius.Y, bladeCubeRadius.Z));	//Reverse Top Left
 		definedShape[7] = rot.RotateVector(FVector(bladeCubeRadius.X, bladeCubeRadius.Y, -bladeCubeRadius.Z));	//Reverse Bottom Left
-		
 
 		//Generate a cube using the defined shape array
 		GenerateSwordCube(definedShape);
-
-		definedShape[8] = FVector(0.f, 0.f, bladeCubeRadius.Z);	//Tip of Sword
-		//Right
-		tangentSetup = FProcMeshTangent(1.f, 1.0f, 1.0f);
-		AddTriangleMesh(definedShape[0], definedShape[2], definedShape[7], triangleIndexCount, tangentSetup);
 	}
 	else {
-		GeneratePrismBlade();
+		GenerateCurvedBlade();
+		//GeneratePrismBlade();
 	}
 
 	bladeVertices = vertices;
@@ -530,7 +535,7 @@ void APCGSword::GeneratePrismBlade()
 	//MeshReset();
 
 	int32 triangleIndexCount = 0;
-	FVector definedShape[8];
+	FVector definedShape[6];
 	FProcMeshTangent tangentSetup;
 
 	definedShape[0] = FVector(-prismCubeRadius.X, 0.f, -prismCubeRadius.Z);	
@@ -551,7 +556,6 @@ void APCGSword::GeneratePrismBlade()
 	//Back
 	tangentSetup = FProcMeshTangent(0.f, -1.0f, 0.0f);
 	AddQuadMesh(definedShape[4], definedShape[5], definedShape[1], definedShape[2], triangleIndexCount, tangentSetup);
-	//Top
 
 	prismVertices = vertices;
 	prismTriangles = triangles;
@@ -559,6 +563,79 @@ void APCGSword::GeneratePrismBlade()
 	prismUvs = uvs;
 	prismVertexColors = vertexColors;
 	prismTangents = tangents;
+}
+
+void APCGSword::GenerateCurvedBlade()
+{
+	//MeshReset();
+
+	int32 triangleIndexCount = 0;
+	FVector definedShape[10];
+	FProcMeshTangent tangentSetup;
+
+//	definedShape[0] = FVector(-curveCubeRadius.X, 0.f, -curveCubeRadius.Z);
+//	definedShape[1] = FVector(curveCubeRadius.X, curveCubeRadius.Y, -curveCubeRadius.Z);
+//	definedShape[2] = FVector(curveCubeRadius.X, -curveCubeRadius.Y, -curveCubeRadius.Z);
+//	definedShape[3] = FVector(-curveCubeRadius.X, 0.f, curveCubeRadius.Z);
+//	definedShape[4] = FVector(curveCubeRadius.X, curveCubeRadius.Y, curveCubeRadius.Z);
+//	definedShape[5] = FVector(curveCubeRadius.X, -curveCubeRadius.Y, curveCubeRadius.Z);
+
+	FVector controlPoints[4] = {
+		FVector(0.f,0.f,0.f),
+		FVector(1.f,2.f,0.f),
+		FVector(3.f,2.f,0.f),
+		FVector(4.f,0.f,0.f)
+	};
+
+	int numPoints = 10;
+	TArray<FVector> pointsOnCurve;
+
+	FVector::EvaluateBezier(controlPoints,numPoints,pointsOnCurve);
+
+	for (int i = 0; i < pointsOnCurve.Num()-1; i++)
+	{
+		DrawDebugLine(GetWorld(),pointsOnCurve[i],pointsOnCurve[i+1],FColor::Red,true);
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"),i));
+		}
+	}
+	/*
+	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
+	AddQuadMesh(definedShape[0], definedShape[1], definedShape[2], definedShape[3], triangleIndexCount, tangentSetup);
+
+	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
+	AddQuadMesh(definedShape[1], definedShape[2], definedShape[3], definedShape[4], triangleIndexCount, tangentSetup);
+
+	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
+	AddQuadMesh(definedShape[2], definedShape[3], definedShape[4], definedShape[5], triangleIndexCount, tangentSetup);
+
+	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
+	AddQuadMesh(definedShape[6], definedShape[7], definedShape[8], definedShape[9], triangleIndexCount, tangentSetup);
+
+	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
+	AddQuadMesh(definedShape[7], definedShape[8], definedShape[9], definedShape[1], triangleIndexCount, tangentSetup);
+
+	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
+	AddQuadMesh(definedShape[6], definedShape[7], definedShape[8], definedShape[9], triangleIndexCount, tangentSetup);
+
+	tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
+	AddQuadMesh(definedShape[1], definedShape[5], definedShape[0], definedShape[2], triangleIndexCount, tangentSetup);
+
+	*/
+//	curveVertices = vertices;
+//	curveTriangles = triangles;
+//	curveNormals = normals;
+//	curveUvs = uvs;
+//	curveVertexColors = vertexColors;
+//	curveTangents = tangents;
+}
+
+float APCGSword::CurveInterpolate(float from, float to, float percent)
+{
+	int diff;
+	diff = to - from;
+	return from + (diff*percent);
 }
 
 void APCGSword::GenerateSwordCube(FVector defShape[8])
