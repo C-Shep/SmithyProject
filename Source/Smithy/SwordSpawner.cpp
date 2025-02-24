@@ -45,7 +45,9 @@ void ASwordSpawner::BeginPlay()
 		//APCGSword* mySword = World->SpawnActor<APCGSword>(swordBpClass, swordSpawnPos, GetActorRotation(), SpawnInfo); //Spawn Sword
 
 		//Start the Deferred Spawn
-		APCGSword* mySword = World->SpawnActorDeferred<APCGSword>(swordBpClass, GetActorTransform(),GetOwner()); //Spawn Sword
+		FTransform swordTrans = FTransform(swordSpawnPos);
+
+		APCGSword* mySword = World->SpawnActorDeferred<APCGSword>(swordBpClass, swordTrans,GetOwner()); //Spawn Sword
 
 		//Blade Height Calculations & Clamping ---------------------------------------------------------------------
 		float finalBladeHeightMin = heightSlider - heightVariety;

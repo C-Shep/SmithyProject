@@ -160,8 +160,6 @@ void APCGSword::GenerateMesh()
 
 	//Size of the cube at base
 
-	/// --------------------- Blade Attributes ---------------------
-
 	randCubeSize = FMath::RandRange(cubeSizeMin, cubeSizeMax);
 
 	//Random height of the blade
@@ -268,7 +266,7 @@ void APCGSword::GenerateMesh()
 
 	//Rotate Blade Mesh for Prism Blade
 	if(isPrismBladeType==true) {
-		blade->SetWorldRotation(FRotator(0.f, 0.f, 0.f));	
+		blade->SetWorldRotation(FRotator(0.f, 180.f, 0.f));	
 		blade->SetRelativeScale3D(FVector(width, girth, 1.f));
 	}
 
@@ -582,10 +580,10 @@ void APCGSword::GenerateCurvedBlade()
 	FVector b = blade->GetComponentLocation();
 
 	FVector controlPoints[4] = {
-		FVector(0.f,		0.f,		-randHeight),
-		FVector(0.f,		0.f,		-randHeight/2),
-		FVector(0.f,		0.f,		randHeight/2),
-		FVector(80.f,		 0.f,		randHeight)
+		FVector(-8.f,		0.f,		-75.f),
+		FVector(-4.f,		0.f,		-25.f),
+		FVector(4.f,		0.f,		25.f),
+		FVector(8.f,		 0.f,		75.f)
 	};
 
 	int numPoints = 10;
@@ -602,15 +600,15 @@ void APCGSword::GenerateCurvedBlade()
 
 	DrawDebugLine(GetWorld(), b+pointsOnCurve[0], b+pointsOnCurve[9], FColor::Red, true, -1.f, 0, 5.0f);
 	
-	definedShape[0] = (FVector(pX2 - curveCubeRadius.X, curveCubeRadius.Y, curveCubeRadius.Z));	//Forward Top Right
-	definedShape[1] = (FVector(pX - curveCubeRadius.X, curveCubeRadius.Y, -curveCubeRadius.Z));	//Forward Bottom Right
-	definedShape[2] = (FVector(pX2 - curveCubeRadius.X, -curveCubeRadius.Y, curveCubeRadius.Z));	//Forward Top Left
-	definedShape[3] = (FVector(pX - curveCubeRadius.X, -curveCubeRadius.Y, -curveCubeRadius.Z ));//Forward Bottom Left
+	definedShape[0] = (FVector(pX - curveCubeRadius.X, curveCubeRadius.Y, pZ +curveCubeRadius.Z));	//Forward Top Right
+	definedShape[1] = (FVector(pX2 - curveCubeRadius.X, curveCubeRadius.Y, pZ2-curveCubeRadius.Z));	//Forward Bottom Right
+	definedShape[2] = (FVector(pX - curveCubeRadius.X, -curveCubeRadius.Y, pZ+curveCubeRadius.Z));	//Forward Top Left
+	definedShape[3] = (FVector(pX2 - curveCubeRadius.X, -curveCubeRadius.Y, pZ2-curveCubeRadius.Z ));//Forward Bottom Left
 
-	definedShape[4] = (FVector(pX2 + curveCubeRadius.X, -curveCubeRadius.Y, curveCubeRadius.Z ));	//Reverse Top Right
-	definedShape[5] = (FVector(pX + curveCubeRadius.X, -curveCubeRadius.Y, -curveCubeRadius.Z ));	//Reverse Bottom Right
-	definedShape[6] = (FVector(pX2 + curveCubeRadius.X, curveCubeRadius.Y, curveCubeRadius.Z));	//Reverse Top Left
-	definedShape[7] = (FVector(pX + curveCubeRadius.X, curveCubeRadius.Y, -curveCubeRadius.Z));	//Reverse Bottom Left
+	definedShape[4] = (FVector(pX + curveCubeRadius.X, -curveCubeRadius.Y, pZ+curveCubeRadius.Z ));	//Reverse Top Right
+	definedShape[5] = (FVector(pX2 + curveCubeRadius.X, -curveCubeRadius.Y, pZ2-curveCubeRadius.Z ));	//Reverse Bottom Right
+	definedShape[6] = (FVector(pX + curveCubeRadius.X, curveCubeRadius.Y, pZ+curveCubeRadius.Z));	//Reverse Top Left
+	definedShape[7] = (FVector(pX2 + curveCubeRadius.X, curveCubeRadius.Y, pZ2-curveCubeRadius.Z));	//Reverse Bottom Left
 	
 
 	GenerateSwordCube(definedShape);
