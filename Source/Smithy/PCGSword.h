@@ -182,6 +182,8 @@ public:
 	float heightMin;
 	float heightMax;
 
+	FVector curvePosition;
+
 	//Blade Width
 	float cubeSizeMin;
 	float cubeSizeMax;
