@@ -213,7 +213,6 @@ public:
 
 	//Blade Type
 	float randBladeType;
-	float curveTipX;
 
 	//The size of the starting cube that everything is based off of
 	UPROPERTY(EditAnywhere)

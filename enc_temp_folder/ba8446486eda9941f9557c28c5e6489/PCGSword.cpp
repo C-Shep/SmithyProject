@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PCGSword.h"
-#include "Logging/LogMacros.h"
 #include "Math/Vector.h"
 #include "EngineGlobals.h"
 
@@ -339,10 +338,9 @@ void APCGSword::GenerateMesh()
 		tip->SetRelativeScale3D(FVector(tipToBladeConstant, tipToBladeConstant, 1.f));
 	}
 	else if(isPrismBladeType) {
-		//GeneratePrismTip();
-		//tip->SetVisibility(false);
+		GeneratePrismTip();
 		//tipToBladeConstant = 1.f;
-		//tip->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
+		tip->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
 	}
 
 	tip->CreateMeshSection_LinearColor(0, tipVertices, tipTriangles, tipNormals, tipUvs, tipVertexColors, tipTangents, true);
@@ -614,11 +612,9 @@ void APCGSword::GenerateCurvedBlade()
 	curveVertexColors.SetNum(numRows);
 	curveTangents.SetNum(numRows);
 
-	
-
 	for (int i = 0; i < numRows; i++)
 	{
-	//	DrawDebugLine(GetWorld(), b + pointsOnCurve[i], b + pointsOnCurve[i + 1], FColor::Red, true, -1.f, 0, 5.0f);
+		DrawDebugLine(GetWorld(), b + pointsOnCurve[i], b + pointsOnCurve[i + 1], FColor::Red, true, -1.f, 0, 5.0f);
 	}
 
 	for (int i = 0; i < numRows; i++)
@@ -628,40 +624,17 @@ void APCGSword::GenerateCurvedBlade()
 		float pX2 = pointsOnCurve[i+1].X;
 		float pZ2 = pointsOnCurve[i+1].Z;
 
-		if (i < numRows - 1)
-		{
-			definedShape[0] = (FVector(pX2 - curveCubeRadius.X, 0.f, pZ2));		//Forward Top Right
-			definedShape[1] = (FVector(pX - curveCubeRadius.X, 0.f, pZ));		//Forward Bottom Right
-			definedShape[2] = (FVector(pX2 - curveCubeRadius.X, 0.f, pZ2));	//Forward Top Left
-			definedShape[3] = (FVector(pX - curveCubeRadius.X, 0.f, pZ));	//Forward Bottom Left
+		definedShape[0] = (FVector(pX2 - curveCubeRadius.X, curveCubeRadius.Y, pZ2));		//Forward Top Right
+		definedShape[1] = (FVector(pX - curveCubeRadius.X, curveCubeRadius.Y, pZ));		//Forward Bottom Right
+		definedShape[2] = (FVector(pX2 - curveCubeRadius.X, -curveCubeRadius.Y, pZ2));	//Forward Top Left
+		definedShape[3] = (FVector(pX - curveCubeRadius.X, -curveCubeRadius.Y, pZ));	//Forward Bottom Left
 
-			definedShape[4] = (FVector(pX2 + curveCubeRadius.X, -curveCubeRadius.Y, pZ2));	//Reverse Top Right
-			definedShape[5] = (FVector(pX + curveCubeRadius.X, -curveCubeRadius.Y, pZ));	//Reverse Bottom Right
-			definedShape[6] = (FVector(pX2 + curveCubeRadius.X, curveCubeRadius.Y, pZ2));		//Reverse Top Left
-			definedShape[7] = (FVector(pX + curveCubeRadius.X, curveCubeRadius.Y, pZ));		//Reverse Bottom Left
+		definedShape[4] = (FVector(pX2 + curveCubeRadius.X, -curveCubeRadius.Y, pZ2));	//Reverse Top Right
+		definedShape[5] = (FVector(pX + curveCubeRadius.X, -curveCubeRadius.Y, pZ));	//Reverse Bottom Right
+		definedShape[6] = (FVector(pX2 + curveCubeRadius.X, curveCubeRadius.Y, pZ2 ));		//Reverse Top Left
+		definedShape[7] = (FVector(pX + curveCubeRadius.X, curveCubeRadius.Y, pZ));		//Reverse Bottom Left
 
-			GenerateSwordCube(definedShape);
-		}
-		else {
-			definedShape[0] = FVector(pX- curveCubeRadius.X, 0.f, pZ);	//Middle Left
-			definedShape[1] = FVector(pX+ curveCubeRadius.X, curveCubeRadius.Y, pZ);	//Forward Right
-			definedShape[2] = FVector(pX+ curveCubeRadius.X, -curveCubeRadius.Y, pZ);	//Back Right
-			definedShape[3] = FVector(pX2+ curveCubeRadius.X, 0.f, pZ2); //Top
-
-			//Dont use generateSwordCube for this one, its not a cube its a pyramid prism thing. geometry is for nerds
-
-			//Front
-			tangentSetup = FProcMeshTangent(-1.f, -1.0f,-1.0f);
-			AddTriangleMesh(definedShape[3], definedShape[0], definedShape[1], triangleIndexCount, tangentSetup);
-
-			///Back
-			tangentSetup = FProcMeshTangent(-1.f, -1.0f,-1.0f);
-			AddTriangleMesh(definedShape[3], definedShape[2], definedShape[0], triangleIndexCount, tangentSetup);
-
-			//Right
-			tangentSetup = FProcMeshTangent(-1.f, -1.0f, -1.0f);
-			AddTriangleMesh(definedShape[3], definedShape[1], definedShape[2], triangleIndexCount, tangentSetup);
-		}
+		GenerateSwordCube(definedShape);
 
 		curveVertices[i] = vertices;
 		curveTriangles[i] = triangles;
@@ -673,7 +646,15 @@ void APCGSword::GenerateCurvedBlade()
 		MeshReset();
 	}
 
-	curveTipX = pointsOnCurve[9].X;
+	for (int j = 0; j < numRows; j++)
+	{
+		combinedCurveVertices.Append(curveVertices[j]);
+		combinedCurveTriangles.Append(curveTriangles[j]);
+		combinedCurveNormals.Append(curveNormals[j]);
+		combinedCurveUvs.Append(curveUvs[j]);
+		combinedCurveVertexColors.Append(curveVertexColors[j]);
+		combinedCurveTangents.Append(curveTangents[j]);
+	}
 }
 
 float APCGSword::CurveInterpolate(float from, float to, float percent)
@@ -715,6 +696,7 @@ void APCGSword::GenerateSwordCube(FVector defShape[8])
 
 void APCGSword::AddTriangleMesh(FVector topRight, FVector bottomRight, FVector bottomLeft, int32& triIndex, FProcMeshTangent tangent)
 {
+	
 	int32 point1 = triIndex++;
 	int32 point2 = triIndex++;
 	int32 point3 = triIndex++;
@@ -727,27 +709,17 @@ void APCGSword::AddTriangleMesh(FVector topRight, FVector bottomRight, FVector b
 	triangles.Add(point2);
 	triangles.Add(point3);
 
-	FVector edge1 = bottomRight - topRight;
-	FVector edge2 = bottomLeft - topRight;
-
-	FVector thisNorm = FVector::CrossProduct(edge2, edge1).GetSafeNormal();
-
-	UE_LOG(LogTemp, Warning, TEXT("Edge1: %s"), *edge1.ToString());
-	UE_LOG(LogTemp, Warning, TEXT("Edge2: %s"), *edge2.ToString());
-	UE_LOG(LogTemp, Warning, TEXT("Normal: %s"), *thisNorm.ToString());
-	UE_LOG(LogTemp, Warning, TEXT("TopRight: %s"), *topRight.ToString());
-	UE_LOG(LogTemp, Warning, TEXT("BottomRight: %s"), *bottomRight.ToString());
-	UE_LOG(LogTemp, Warning, TEXT("BottomLeft: %s"), *bottomLeft.ToString());
-
+	
 	for (int i = 0; i < 3; i++)
 	{
+		FVector thisNorm = FVector::CrossProduct(topRight - bottomLeft, topRight - bottomRight).GetSafeNormal();
 		normals.Add(thisNorm);
 		tangents.Add(tangent);
 		vertexColors.Add(FLinearColor::Red);
 	}
 
 	uvs.Add(FVector2D(1.0f, 1.0f));//Top Right
-	uvs.Add(FVector2D(1.0f, -1.0f));//Bottom Right
+	uvs.Add(FVector2D(-1.0f, 1.0f));//Bottom Right
 	uvs.Add(FVector2D(-1.0f, -1.0f));//Bottom Left
 	
 }
