@@ -126,21 +126,12 @@ public:
 	TArray<FProcMeshTangent> prismTangents;
 
 	//Curve Attributes
-	TArray<TArray<FVector>> curveVertices;
-	TArray<TArray<int>> curveTriangles;
-	TArray<TArray<FVector>> curveNormals;
-	TArray<TArray<FVector2D>> curveUvs;
-	TArray<TArray<FLinearColor>> curveVertexColors;
-	TArray<TArray<FProcMeshTangent>> curveTangents;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	TArray<FVector> combinedCurveVertices;
-
-	TArray<int> combinedCurveTriangles;
-	TArray<FVector> combinedCurveNormals;
-	TArray<FVector2D> combinedCurveUvs;
-	TArray<FLinearColor> combinedCurveVertexColors;
-	TArray<FProcMeshTangent> combinedCurveTangents;
+	TArray<FVector> curveVertices;
+	TArray<int> curveTriangles;
+	TArray<FVector> curveNormals;
+	TArray<FVector2D> curveUvs;
+	TArray<FLinearColor> curveVertexColors;
+	TArray<FProcMeshTangent> curveTangents;
 
 	//Generate each section of the sword, somewhat of a main function
 	void GenerateMesh();

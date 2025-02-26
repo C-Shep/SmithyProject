@@ -160,6 +160,8 @@ void APCGSword::GenerateMesh()
 
 	//Size of the cube at base
 
+	/// --------------------- Blade Attributes ---------------------
+
 	randCubeSize = FMath::RandRange(cubeSizeMin, cubeSizeMax);
 
 	//Random height of the blade
@@ -255,18 +257,32 @@ void APCGSword::GenerateMesh()
 	GenerateBlade();
 
 	//------------------------------ Modify the Blade's Transform to look... uh... blade-like ------------------------------
-	blade->CreateMeshSection_LinearColor(0, bladeVertices, bladeTriangles, bladeNormals, bladeUvs, bladeVertexColors, bladeTangents, true);	
+	
 
 	//Rotate Blade Mesh for Normal Blade
 	if (isPrismBladeType==false)
 	{
+		blade->CreateMeshSection_LinearColor(0, bladeVertices, bladeTriangles, bladeNormals, bladeUvs, bladeVertexColors, bladeTangents, true);
 		blade->SetWorldRotation(FRotator(0.f, 90.f, 0.f));	
 		blade->SetRelativeScale3D(FVector(girth, width, 1.f));
 	}
 
 	//Rotate Blade Mesh for Prism Blade
 	if(isPrismBladeType==true) {
-		blade->SetWorldRotation(FRotator(0.f, 180.f, 0.f));	
+	//	for (int i = 0; i < 9; i++)
+	//	{
+			blade->CreateMeshSection_LinearColor(
+				0,
+				curveVertices,
+				curveTriangles,
+				curveNormals,
+				curveUvs,
+				curveVertexColors,
+				curveTangents,
+				true
+			);
+	//	}
+		blade->SetWorldRotation(FRotator(0.f, 0.f, 0.f));	
 		blade->SetRelativeScale3D(FVector(width, girth, 1.f));
 	}
 
@@ -326,17 +342,12 @@ void APCGSword::GenerateMesh()
 	}
 
 	tip->CreateMeshSection_LinearColor(0, tipVertices, tipTriangles, tipNormals, tipUvs, tipVertexColors, tipTangents, true);
-
-
-	
 	tip->SetWorldLocation(blade->GetComponentLocation() + (FVector(0.f, 0.f, (bladeCubeRadius.Z + tipCubeRadius.Z))));
 }
 
 void APCGSword::GenerateBlade()
 {
 	MeshReset();
-
-
 
 	if (!isPrismBladeType)
 	{
@@ -575,15 +586,23 @@ void APCGSword::GenerateCurvedBlade()
 
 	int32 triangleIndexCount = 0;
 	FVector definedShape[8];
+	TArray<FVector> curveShape;
 	FProcMeshTangent tangentSetup;
 
 	FVector b = blade->GetComponentLocation();
 
+	//FVector controlPoints[4] = {
+	//	FVector(0.f,		0.f,		-randHeight),
+	//	FVector(0.f,		0.f,		-randHeight/2),
+	//	FVector(0.f,		0.f,		randHeight/2),
+	//	FVector(80.f,		 0.f,		randHeight)
+	//};
+
 	FVector controlPoints[4] = {
-		FVector(-8.f,		0.f,		-75.f),
-		FVector(-4.f,		0.f,		-25.f),
-		FVector(4.f,		0.f,		25.f),
-		FVector(8.f,		 0.f,		75.f)
+	FVector(0.f,		0.f,		-75),
+	FVector(0.f,		0.f,		-75 / 2),
+	FVector(0.f,		0.f,		75 / 2),
+	FVector(80.f,		 0.f,		75)
 	};
 
 	int numPoints = 10;
@@ -591,39 +610,43 @@ void APCGSword::GenerateCurvedBlade()
 
 	FVector::EvaluateBezier(controlPoints,numPoints,pointsOnCurve);
 
-	curvePosition = pointsOnCurve[0];
+	int numRows = pointsOnCurve.Num() - 1;
+	curveShape.SetNum(numRows);
 
-	float pX = pointsOnCurve[0].X;
-	float pZ = pointsOnCurve[0].Z;
-	float pX2 = pointsOnCurve[9].X;
-	float pZ2 = pointsOnCurve[9].Z;
+	for (int i = 0; i < pointsOnCurve.Num() - 1; i++)
+	{
+		float pX = pointsOnCurve[8].X;
+		float pZ = pointsOnCurve[8].Z;
+		float pX2 = pointsOnCurve[9].X;
+		float pZ2 = pointsOnCurve[9].Z;
 
-	DrawDebugLine(GetWorld(), b+pointsOnCurve[0], b+pointsOnCurve[9], FColor::Red, true, -1.f, 0, 5.0f);
-	
-	definedShape[0] = (FVector(pX - curveCubeRadius.X, curveCubeRadius.Y, pZ +curveCubeRadius.Z));	//Forward Top Right
-	definedShape[1] = (FVector(pX2 - curveCubeRadius.X, curveCubeRadius.Y, pZ2-curveCubeRadius.Z));	//Forward Bottom Right
-	definedShape[2] = (FVector(pX - curveCubeRadius.X, -curveCubeRadius.Y, pZ+curveCubeRadius.Z));	//Forward Top Left
-	definedShape[3] = (FVector(pX2 - curveCubeRadius.X, -curveCubeRadius.Y, pZ2-curveCubeRadius.Z ));//Forward Bottom Left
+		DrawDebugLine(GetWorld(), b + pointsOnCurve[i], b + pointsOnCurve[i+1], FColor::Red, true, -1.f, 0, 5.0f);
 
-	definedShape[4] = (FVector(pX + curveCubeRadius.X, -curveCubeRadius.Y, pZ+curveCubeRadius.Z ));	//Reverse Top Right
-	definedShape[5] = (FVector(pX2 + curveCubeRadius.X, -curveCubeRadius.Y, pZ2-curveCubeRadius.Z ));	//Reverse Bottom Right
-	definedShape[6] = (FVector(pX + curveCubeRadius.X, curveCubeRadius.Y, pZ+curveCubeRadius.Z));	//Reverse Top Left
-	definedShape[7] = (FVector(pX2 + curveCubeRadius.X, curveCubeRadius.Y, pZ2-curveCubeRadius.Z));	//Reverse Bottom Left
-	
+		definedShape[0] = (FVector(pX2 - curveCubeRadius.X, curveCubeRadius.Y, pZ2 + curveCubeRadius.Z));		//Forward Top Right
+		definedShape[1] = (FVector(pX - curveCubeRadius.X, curveCubeRadius.Y, pZ2 -curveCubeRadius.Z));		//Forward Bottom Right
+		definedShape[2] = (FVector(pX2 - curveCubeRadius.X, -curveCubeRadius.Y, pZ2 + curveCubeRadius.Z));	//Forward Top Left
+		definedShape[3] = (FVector(pX - curveCubeRadius.X, -curveCubeRadius.Y, pZ2 -curveCubeRadius.Z));	//Forward Bottom Left
 
-	GenerateSwordCube(definedShape);
+		definedShape[4] = (FVector(pX2 + curveCubeRadius.X, -curveCubeRadius.Y, pZ2 + curveCubeRadius.Z));	//Reverse Top Right
+		definedShape[5] = (FVector(pX + curveCubeRadius.X, -curveCubeRadius.Y, pZ2 -curveCubeRadius.Z));	//Reverse Bottom Right
+		definedShape[6] = (FVector(pX2 + curveCubeRadius.X, curveCubeRadius.Y, pZ2 + curveCubeRadius.Z));		//Reverse Top Left
+		definedShape[7] = (FVector(pX + curveCubeRadius.X, curveCubeRadius.Y, pZ2 -curveCubeRadius.Z));		//Reverse Bottom Left
 
-	//tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
-	//AddQuadMesh(definedShape[0], definedShape[1], definedShape[2], definedShape[3], triangleIndexCount, tangentSetup);
+		//TArray<FVector> shape;
+		//shape.Append(definedShape,8);
+		curveShape.Append(definedShape,8);
 
-	//tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
-	//AddQuadMesh(definedShape[1], definedShape[2], definedShape[3], definedShape[4], triangleIndexCount, tangentSetup);
+		GenerateSwordCube(&curveShape[i]);
 
-	//tangentSetup = FProcMeshTangent(0.f, 1.0f, 0.0f);
-	//AddQuadMesh(definedShape[2], definedShape[3], definedShape[4], definedShape[5], triangleIndexCount, tangentSetup);
+		//MeshReset();
+	}
 
-//	this->SetActorLocation(pointsOnCurve[0]);
-	
+	curveVertices = vertices;
+	curveTriangles = triangles;
+	curveNormals = normals;
+	curveUvs = uvs;
+	curveVertexColors = vertexColors;
+	curveTangents = tangents;
 }
 
 float APCGSword::CurveInterpolate(float from, float to, float percent)

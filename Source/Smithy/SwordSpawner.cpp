@@ -45,6 +45,7 @@ void ASwordSpawner::BeginPlay()
 		//APCGSword* mySword = World->SpawnActor<APCGSword>(swordBpClass, swordSpawnPos, GetActorRotation(), SpawnInfo); //Spawn Sword
 
 		//Start the Deferred Spawn
+		//Get the transform of the swordPosition so the sword points the right direction and position
 		FTransform swordTrans = FTransform(swordSpawnPos);
 
 		APCGSword* mySword = World->SpawnActorDeferred<APCGSword>(swordBpClass, swordTrans,GetOwner()); //Spawn Sword
