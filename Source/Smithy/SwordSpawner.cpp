@@ -30,7 +30,8 @@ ASwordSpawner::ASwordSpawner()
 
 	pommelSizeVariety = 0.f;
 
-	isPrismBlade = false;
+	curveSizeSlider = 80.f;
+
 }
 
 // Called when the game starts or when spawned
@@ -88,7 +89,7 @@ void ASwordSpawner::BeginPlay()
 		if (finalPommelSizeMin < 1.f) finalPommelSizeMin = 1.f;
 
 		//Set the blades attributes
-		mySword->SetBladeAttributes(finalBladeHeightMin, finalBladeHeightMax, finalBladeWidthMin, finalBladeWidthMax, guardMulti, finalGuardWidthMin, finalGuardWidthMax, finalGripHeightMin, finalGripHeightMax, finalPommelSizeMin, finalPommelSizeMax, isPrismBlade);
+		mySword->SetBladeAttributes(finalBladeHeightMin, finalBladeHeightMax, finalBladeWidthMin, finalBladeWidthMax, guardMulti, finalGuardWidthMin, finalGuardWidthMax, finalGripHeightMin, finalGripHeightMax, finalPommelSizeMin, finalPommelSizeMax, bladeType, curveSizeSlider);
 
 		//Stop the Deferred Spawn, Actually spawn the sword now
 		UGameplayStatics::FinishSpawningActor(mySword, mySword->GetTransform());

@@ -76,7 +76,7 @@ APCGSword::APCGSword()
 	guardWidthMultiMin = 1.5;
 }
 
-void APCGSword::SetBladeAttributes(float newMinBladeH, float newMaxBladeH, float newMinBladeW, float newMaxBladeW, float newGuardMulti, float newMinGuardW, float newMaxGuardW, float newMinGripH, float newMaxGripH, float newMinPommelSize, float newMaxPommelSize, bool isPrismBlade)
+void APCGSword::SetBladeAttributes(float newMinBladeH, float newMaxBladeH, float newMinBladeW, float newMaxBladeW, float newGuardMulti, float newMinGuardW, float newMaxGuardW, float newMinGripH, float newMaxGripH, float newMinPommelSize, float newMaxPommelSize, int newBladeType, float newCurve)
 {
 	//Blade H
 	heightMin = newMinBladeH;
@@ -100,7 +100,11 @@ void APCGSword::SetBladeAttributes(float newMinBladeH, float newMaxBladeH, float
 	pommelWidthMin = newMinPommelSize;
 	pommelWidthMax = newMaxPommelSize;
 
-	isPrismBladeType = isPrismBlade;
+	//Blade Type
+	bladeType = newBladeType;
+
+	//Curve
+	curveAmount = newCurve;
 }
 
 // Called when the game starts or when spawned
@@ -145,24 +149,12 @@ void APCGSword::GenerateMesh()
 {
 	MeshReset();
 
-	//Set Base Rotation for the Sword, 90 so it faces the Camera
+	//Set Base Rotation for the Sword, 90 so it faces the Camera (change this back if prism blade tho)
 	this->SetActorRotation(FRotator(0.f,90.f,0.f));
 
-	//set blade type
-	//randBladeType = FMath::RandRange(0, 1);
-
-	//if (randBladeType == 1)
-	//{
-	//	isPrismBladeType = true;
-	//}
-	//else {
-	//	isPrismBladeType = false;
-	//}
-
-	//Size of the cube at base
-
 	/// --------------------- Blade Attributes ---------------------
-
+	
+	//Size of the cube at base
 	randCubeSize = FMath::RandRange(cubeSizeMin, cubeSizeMax);
 
 	//Random height of the blade
@@ -188,8 +180,6 @@ void APCGSword::GenerateMesh()
 	/// --------------------- Guard Attributes ---------------------
 
 	//Guard Width
-	//const float guardWidthMin = randCubeSize + (randCubeSize / 7);
-	//const float guardWidthMax = randCubeSize + (randCubeSize / 5);
 	float guardWidth = FMath::RandRange(guardWidthMin, guardWidthMax);
 
 	if (guardWidth < (randCubeSize - (randCubeSize/2))) guardWidth = randCubeSize - (randCubeSize / 2);
@@ -261,15 +251,21 @@ void APCGSword::GenerateMesh()
 	
 
 	//Rotate Blade Mesh for Normal Blade
-	if (isPrismBladeType==false)
+	if (bladeType == 0 || bladeType == 1)
 	{
 		blade->CreateMeshSection_LinearColor(0, bladeVertices, bladeTriangles, bladeNormals, bladeUvs, bladeVertexColors, bladeTangents, true);
 		blade->SetWorldRotation(FRotator(0.f, 90.f, 0.f));	
-		blade->SetRelativeScale3D(FVector(girth, width, 1.f));
+	}
+
+	if (bladeType == 1)
+	{
+		blade->CreateMeshSection_LinearColor(0, bladeVertices, bladeTriangles, bladeNormals, bladeUvs, bladeVertexColors, bladeTangents, true);
+		blade->SetWorldRotation(FRotator(0.f, 0.f, 0.f));
 	}
 
 	//Rotate Blade Mesh for Prism Blade
-	if(isPrismBladeType==true) {
+	if(bladeType == 2) 
+	{
 		for (int i = 0; i < 9; i++)
 		{
 			blade->CreateMeshSection_LinearColor(
@@ -283,12 +279,11 @@ void APCGSword::GenerateMesh()
 				true
 			);
 		}
-
-
-		blade->SetWorldRotation(FRotator(0.f, 0.f, 0.f));	
+		blade->SetWorldRotation(FRotator(0.f, 0.f, 0.f));
 		blade->SetRelativeScale3D(FVector(width, girth, 1.f));
 	}
 
+	blade->SetRelativeScale3D(FVector(girth, width, 1.f));
 
 	//------------------------------ Generate Guard Mesh, Modify it ------------------------------
 	GenerateGuard();
@@ -333,16 +328,13 @@ void APCGSword::GenerateMesh()
 	float tipToBladeConstant = 1.415f;
 	
 	//Use the correct tip for hte correct sword
-	if (!isPrismBladeType)
+	if (bladeType == 0)
 	{
 		GenerateTip();
 		tip->SetRelativeScale3D(FVector(tipToBladeConstant, tipToBladeConstant, 1.f));
 	}
-	else if(isPrismBladeType) {
-		//GeneratePrismTip();
-		//tip->SetVisibility(false);
-		//tipToBladeConstant = 1.f;
-		//tip->SetRelativeScale3D(FVector(1.f, 1.f, 1.f));
+	else if(bladeType == 1) {
+		GeneratePrismTip();
 	}
 
 	tip->CreateMeshSection_LinearColor(0, tipVertices, tipTriangles, tipNormals, tipUvs, tipVertexColors, tipTangents, true);
@@ -353,7 +345,7 @@ void APCGSword::GenerateBlade()
 {
 	MeshReset();
 
-	if (!isPrismBladeType)
+	if(bladeType == 0)
 	{
 		int32 triangleIndexCount = 0;
 		FVector definedShape[8];
@@ -373,10 +365,15 @@ void APCGSword::GenerateBlade()
 
 		//Generate a cube using the defined shape array
 		GenerateSwordCube(definedShape);
+
 	}
-	else {
+	else if (bladeType == 1)
+	{
+		GeneratePrismBlade();
+	}
+	else if (bladeType == 2)
+	{
 		GenerateCurvedBlade();
-		//GeneratePrismBlade();
 	}
 
 	bladeVertices = vertices;
@@ -598,7 +595,7 @@ void APCGSword::GenerateCurvedBlade()
 		FVector(0.f,		0.f,		-randHeight),
 		FVector(0.f,		0.f,		-randHeight/2),
 		FVector(0.f,		0.f,		randHeight/2),
-		FVector(80.f,		 0.f,		randHeight)
+		FVector(curveAmount,		 0.f,		randHeight)
 	};
 
 	int numPoints = 10;
@@ -614,12 +611,6 @@ void APCGSword::GenerateCurvedBlade()
 	curveVertexColors.SetNum(numRows);
 	curveTangents.SetNum(numRows);
 
-	
-
-	for (int i = 0; i < numRows; i++)
-	{
-	//	DrawDebugLine(GetWorld(), b + pointsOnCurve[i], b + pointsOnCurve[i + 1], FColor::Red, true, -1.f, 0, 5.0f);
-	}
 
 	for (int i = 0; i < numRows; i++)
 	{
@@ -672,15 +663,6 @@ void APCGSword::GenerateCurvedBlade()
 
 		MeshReset();
 	}
-
-	curveTipX = pointsOnCurve[9].X;
-}
-
-float APCGSword::CurveInterpolate(float from, float to, float percent)
-{
-	int diff;
-	diff = to - from;
-	return from + (diff*percent);
 }
 
 void APCGSword::GenerateSwordCube(FVector defShape[8])

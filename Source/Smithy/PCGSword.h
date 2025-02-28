@@ -63,7 +63,6 @@ public:
 	//------ Prism Variables ------
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector prismCubeRadius;
-	bool isPrismBladeType; //Temporary check for blade type, will make this an enum later
 
 	//------ Curve Variables ------
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -157,8 +156,6 @@ public:
 	void GeneratePrismTip();
 	void GeneratePrismBlade();
 	void GenerateCurvedBlade();
-	float CurveInterpolate(float from, float to, float percent);
-
 	//Generates a cube based on the 8 vectors passed in 
 	void GenerateSwordCube(FVector defShape[8]);
 
@@ -185,7 +182,7 @@ public:
 
 	void AddTriangleMesh(FVector topRight, FVector bottomRight, FVector bottomLeft, int32& triIndex, FProcMeshTangent tangent);
 	void AddQuadMesh(FVector topRight, FVector bottomRight, FVector topLeft, FVector bottomLeft, int32& triIndex, FProcMeshTangent tangent);
-	void SetBladeAttributes(float newMinBladeH, float newMaxBladeH, float newMinBladeW, float newMaxBladeW, float newGuardMulti, float newMinGuardW, float newMaxGuardW, float newMinGripH, float newMaxGripH, float newMinPommelSize, float newMaxPommelSize, bool isPrismBlade);
+	void SetBladeAttributes(float newMinBladeH, float newMaxBladeH, float newMinBladeW, float newMaxBladeW, float newGuardMulti, float newMinGuardW, float newMaxGuardW, float newMinGripH, float newMaxGripH, float newMinPommelSize, float newMaxPommelSize, int newBladeType, float newCurve);
 
 	//Blade Height
 	float heightMin;
@@ -212,8 +209,10 @@ public:
 	float pommelWidthMax;
 
 	//Blade Type
-	float randBladeType;
-	float curveTipX;
+	int bladeType;
+
+	//Curve
+	float curveAmount;
 
 	//The size of the starting cube that everything is based off of
 	UPROPERTY(EditAnywhere)

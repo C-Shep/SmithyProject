@@ -60,7 +60,10 @@ public:
 	float pommelSizeVariety;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool isPrismBlade;
+	int bladeType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float curveSizeSlider;
 
 	AActor* spawnedSword;
 
