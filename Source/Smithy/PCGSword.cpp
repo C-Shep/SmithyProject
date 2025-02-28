@@ -284,6 +284,7 @@ void APCGSword::GenerateMesh()
 		blade->SetRelativeScale3D(FVector(width, girth, 1.f));
 	}
 
+	float matBladeScale = FMath::RandRange(-0.05f, 0.05f);
 	blade->SetRelativeScale3D(FVector(girth, width, 1.f));
 
 	//------------------------------ Generate Guard Mesh, Modify it ------------------------------
@@ -348,7 +349,7 @@ void APCGSword::GenerateBlade()
 	if(bladeType == 0)
 	{
 		int32 triangleIndexCount = 0;
-		FVector definedShape[8];
+		FVector definedShape[9];
 		FProcMeshTangent tangentSetup;
 
 		const FRotator rot(0, 45, 0);
@@ -362,9 +363,15 @@ void APCGSword::GenerateBlade()
 		definedShape[5] = rot.RotateVector(FVector(bladeCubeRadius.X, -bladeCubeRadius.Y, -bladeCubeRadius.Z));	//Reverse Bottom Right
 		definedShape[6] = rot.RotateVector(FVector(bladeCubeRadius.X, bladeCubeRadius.Y, bladeCubeRadius.Z));	//Reverse Top Left
 		definedShape[7] = rot.RotateVector(FVector(bladeCubeRadius.X, bladeCubeRadius.Y, -bladeCubeRadius.Z));	//Reverse Bottom Left
+		definedShape[8] = rot.RotateVector(FVector(0.f, 0.f, bladeCubeRadius.Z+50.f));	//Centre
 
 		//Generate a cube using the defined shape array
 		GenerateSwordCube(definedShape);
+
+		AddTriangleMesh(definedShape[8], definedShape[2], definedShape[0], triangleIndexCount, tangentSetup);
+		AddTriangleMesh(definedShape[8], definedShape[0], definedShape[6], triangleIndexCount, tangentSetup);
+		AddTriangleMesh(definedShape[8], definedShape[6], definedShape[4], triangleIndexCount, tangentSetup);
+		AddTriangleMesh(definedShape[8], definedShape[4], definedShape[2], triangleIndexCount, tangentSetup);
 
 	}
 	else if (bladeType == 1)
