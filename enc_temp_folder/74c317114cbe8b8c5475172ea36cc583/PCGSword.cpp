@@ -720,7 +720,9 @@ void APCGSword::AddTriangleMesh(FVector topLeft, FVector bottomRight, FVector bo
 	FVector edge1 = topLeft - bottomLeft;
 	FVector edge2 = bottomRight - topLeft;
 
-	FVector thisNorm = FVector::CrossProduct(edge2, edge1).GetSafeNormal();
+	FVector thisNorm = FVector::CrossProduct(edge1, edge2).GetSafeNormal();
+
+
 
 //	UE_LOG(LogTemp, Warning, TEXT("Edge1: %s"), *edge1.ToString());
 //	UE_LOG(LogTemp, Warning, TEXT("Edge2: %s"), *edge2.ToString());
@@ -729,12 +731,17 @@ void APCGSword::AddTriangleMesh(FVector topLeft, FVector bottomRight, FVector bo
 	UE_LOG(LogTemp, Warning, TEXT("BottomRight: %s"), *bottomRight.ToString());
 	UE_LOG(LogTemp, Warning, TEXT("BottomLeft: %s"), *bottomLeft.ToString());
 
-	for (int i = 0; i < 3; i++)
-	{
-		normals.Add(thisNorm);
-		tangents.Add(tangent);
-		vertexColors.Add(FLinearColor::Red);
-	}
+	normals.Add(thisNorm);
+	normals.Add(thisNorm);
+	normals.Add(thisNorm);
+
+	tangents.Add(tangent);
+	tangents.Add(tangent);
+	tangents.Add(tangent);
+
+	vertexColors.Add(FLinearColor::Red);
+	vertexColors.Add(FLinearColor::Red);
+	vertexColors.Add(FLinearColor::Red);
 
 	uvs.Add(FVector2D(0.0f, 0.0f));//Top Left
 	uvs.Add(FVector2D(0.0f, 1.0f));//Bottom Left

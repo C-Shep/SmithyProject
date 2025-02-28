@@ -1,8 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "SwordSpawner.h"
 
-
-
 // Sets default values
 ASwordSpawner::ASwordSpawner()
 {
