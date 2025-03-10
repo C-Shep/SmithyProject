@@ -218,5 +218,15 @@ public:
 	UPROPERTY(EditAnywhere)
 	float randCubeSize;
 
+	//------------ Statistics ------------
+	float bladeVolume;
+
+	UPROPERTY(BlueprintReadOnly,EditAnywhere) 
+	float swordDamage;
+
+	float swordDamageMultLow;
+	float swordDamageMultHigh;
+
+	void CalculateStats();
 	
 };

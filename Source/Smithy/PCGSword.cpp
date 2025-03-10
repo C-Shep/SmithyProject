@@ -75,6 +75,9 @@ APCGSword::APCGSword()
 
 	guardWidthMultiMin = 0.8;
 	guardWidthMultiMin = 1.5;
+
+	swordDamageMultLow = 0.9;
+	swordDamageMultHigh = 1.1;
 }
 
 void APCGSword::SetBladeAttributes(float newMinBladeH, float newMaxBladeH, float newMinBladeW, float newMaxBladeW, float newGuardMulti, float newMinGuardW, float newMaxGuardW, float newMinGripH, float newMaxGripH, float newMinPommelSize, float newMaxPommelSize, int newBladeType, float newCurve)
@@ -107,6 +110,8 @@ void APCGSword::SetBladeAttributes(float newMinBladeH, float newMaxBladeH, float
 	//Curve
 	curveAmount = newCurve;
 }
+
+
 
 // Called when the game starts or when spawned
 void APCGSword::BeginPlay()
@@ -246,10 +251,10 @@ void APCGSword::GenerateMesh()
 	curveCubeRadius = FVector(curveSize, curveSize, randHeight);
 
 	//------------------------------ Fill the Mesh Variables with Mesh Data ------------------------------
-	GenerateBlade();
 
-	//------------------------------ Modify the Blade's Transform to look... uh... blade-like ------------------------------
-	
+	//------------------------------ Generate Blade Mesh, Modify it ------------------------------
+
+	GenerateBlade();
 
 	//Rotate Blade Mesh for Normal Blade
 	if (bladeType == 0 || bladeType == 1)
@@ -287,6 +292,8 @@ void APCGSword::GenerateMesh()
 	float matBladeScale = FMath::RandRange(-0.05f, 0.05f);
 	blade->SetRelativeScale3D(FVector(girth, width, 1.f));
 
+	bladeVolume = bladeCubeRadius.X * bladeCubeRadius.Y * randHeight;
+
 	//------------------------------ Generate Guard Mesh, Modify it ------------------------------
 	GenerateGuard();
 
@@ -295,8 +302,6 @@ void APCGSword::GenerateMesh()
 	//clamp size of guard. girth to 0.6 as it should be smaller, width to 0.8 as it should be longer. - These are magic number and should be changed
 	float guardGirthMulti = guardWidthMultiplier;
 	float guardWidthMulti = guardWidthMultiplier;
-
-	//guard->SetRelativeScale3D(FVector(guardGirthMulti * 2, guardWidthMulti + 3.f, 1.f));	//magic number, ill fix this later
 
 	//X is towards camera, Y is left and right
 	float matGuardScale = FMath::RandRange(-0.05f, 0.05f);
@@ -340,6 +345,9 @@ void APCGSword::GenerateMesh()
 
 	tip->CreateMeshSection_LinearColor(0, tipVertices, tipTriangles, tipNormals, tipUvs, tipVertexColors, tipTangents, true);
 	tip->SetWorldLocation(blade->GetComponentLocation() + (FVector(0.f, 0.f, (bladeCubeRadius.Z + tipCubeRadius.Z))));
+
+	//------------------------------ Calculate Stats ------------------------------
+	CalculateStats();
 }
 
 void APCGSword::GenerateBlade()
@@ -793,4 +801,8 @@ void APCGSword::AddQuadMesh(FVector topLeft, FVector bottomLeft, FVector topRigh
 	uvs.Add(FVector2D(1.0f, 0.0f));//Bottom Right
 }
 
-
+void APCGSword::CalculateStats()
+{
+	float randomDamageMult = FMath::RandRange(swordDamageMultLow, swordDamageMultHigh);
+	swordDamage = bladeVolume* randomDamageMult;
+}
