@@ -216,12 +216,14 @@ public:
 	//------------ Statistics ------------
 	float bladeVolume;
 
+	//Damage
 	UPROPERTY(BlueprintReadOnly,EditAnywhere) 
 	int32 swordDamage;
 
 	float swordDamageMultLow;
 	float swordDamageMultHigh;
 
+	//Swing Speed
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	int32 swordSwingSpeed;
 	float swordSwingSpeedFloat;
@@ -229,6 +231,30 @@ public:
 	float swordSwingSpeedMultLow;
 	float swordSwingSpeedMultHigh;
 
+	//Defence/Parry
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	int32 swordDefence;
+
+	float swordDefenceMultLow;
+	float swordDefenceMultHigh;
+
+	//Weight
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	int32 swordWeight;
+
+	float swordWeightMultLow;
+	float swordWeightMultHigh;
+
+	//Durability
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	int32 swordDurability;
+
+	float swordDurabilityMultLow;
+	float swordurabilityMultHigh;
+
+	//Name
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	FString swordName;
 
 	void CalculateStats();
 	
