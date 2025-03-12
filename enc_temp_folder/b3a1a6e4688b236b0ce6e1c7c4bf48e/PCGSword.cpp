@@ -76,12 +76,8 @@ APCGSword::APCGSword()
 	guardWidthMultiMin = 0.8;
 	guardWidthMultiMin = 1.5;
 
-	//Random Stat 
 	swordDamageMultLow = 0.9;
 	swordDamageMultHigh = 1.1;
-
-	swordSwingSpeedMultLow = 0.9;
-	swordSwingSpeedMultHigh = 1.1;
 }
 
 void APCGSword::SetBladeAttributes(float newMinBladeH, float newMaxBladeH, float newMinBladeW, float newMaxBladeW, float newGuardMulti, float newMinGuardW, float newMaxGuardW, float newMinGripH, float newMaxGripH, float newMinPommelSize, float newMaxPommelSize, int newBladeType, float newCurve)
@@ -114,6 +110,8 @@ void APCGSword::SetBladeAttributes(float newMinBladeH, float newMaxBladeH, float
 	//Curve
 	curveAmount = newCurve;
 }
+
+
 
 // Called when the game starts or when spawned
 void APCGSword::BeginPlay()
@@ -294,8 +292,7 @@ void APCGSword::GenerateMesh()
 	float matBladeScale = FMath::RandRange(-0.05f, 0.05f);
 	blade->SetRelativeScale3D(FVector(girth, width, 1.f));
 
-	//Calculate blade volume, make the cube radius matter more cuz its a smaller number than the hight
-	bladeVolume = (bladeCubeRadius.X * 1.2) * (bladeCubeRadius.Y * 1.2) * randHeight;
+	bladeVolume = bladeCubeRadius.X * bladeCubeRadius.Y * randHeight;
 
 	//------------------------------ Generate Guard Mesh, Modify it ------------------------------
 	GenerateGuard();
@@ -637,6 +634,7 @@ void APCGSword::GenerateCurvedBlade()
 	curveVertexColors.SetNum(numRows);
 	curveTangents.SetNum(numRows);
 
+
 	for (int i = 0; i < numRows; i++)
 	{
 		float pX = pointsOnCurve[i].X;
@@ -739,6 +737,13 @@ void APCGSword::AddTriangleMesh(FVector topLeft, FVector bottomRight, FVector bo
 
 	FVector thisNorm = FVector::CrossProduct(edge2, edge1).GetSafeNormal();
 
+//	UE_LOG(LogTemp, Warning, TEXT("Edge1: %s"), *edge1.ToString());
+//	UE_LOG(LogTemp, Warning, TEXT("Edge2: %s"), *edge2.ToString());
+//	UE_LOG(LogTemp, Warning, TEXT("Normal: %s"), *thisNorm.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("TopRight: %s"), *topLeft.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("BottomRight: %s"), *bottomRight.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("BottomLeft: %s"), *bottomLeft.ToString());
+
 	for (int i = 0; i < 3; i++)
 	{
 		normals.Add(thisNorm);
@@ -798,22 +803,6 @@ void APCGSword::AddQuadMesh(FVector topLeft, FVector bottomLeft, FVector topRigh
 
 void APCGSword::CalculateStats()
 {
-	//Damage Calculation
 	float randomDamageMult = FMath::RandRange(swordDamageMultLow, swordDamageMultHigh);
-
-	const int32 baseDamage = 10;
-	const int32 standardSize = 25;
-	const float damagePower = 0.5;
-
-	swordDamage = (baseDamage + pow(bladeVolume, damagePower)) * randomDamageMult;
-
-	//Swing Speed Calculation
-	float randomSwingMult = FMath::RandRange(swordSwingSpeedMultLow, swordSwingSpeedMultHigh);
-
-	const int32 baseSwing = 1;
-	const float swingPower = 0.2;
-
-	swordSwingSpeedFloat = baseSwing / pow((bladeVolume),swingPower) * randomSwingMult;
-	swordSwingSpeedFloat = swordSwingSpeedFloat *100.f;
-	swordSwingSpeed = swordSwingSpeedFloat;
+	swordDamage = bladeVolume* randomDamageMult;
 }

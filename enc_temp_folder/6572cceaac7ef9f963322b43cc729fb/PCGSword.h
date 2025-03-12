@@ -159,20 +159,25 @@ public:
 	//Generates a cube based on the 8 vectors passed in 
 	void GenerateSwordCube(FVector defShape[8]);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USceneComponent* sceneComponent;
 
-	//needs to be exposed for material
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UProceduralMeshComponent* blade;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UProceduralMeshComponent* guard;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UProceduralMeshComponent* grip;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UProceduralMeshComponent* pommel;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UProceduralMeshComponent* tip;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UProceduralMeshComponent* prismBlade;
 
 	void AddTriangleMesh(FVector topRight, FVector bottomRight, FVector bottomLeft, int32& triIndex, FProcMeshTangent tangent);
@@ -217,18 +222,10 @@ public:
 	float bladeVolume;
 
 	UPROPERTY(BlueprintReadOnly,EditAnywhere) 
-	int32 swordDamage;
+	float swordDamage;
 
 	float swordDamageMultLow;
 	float swordDamageMultHigh;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	int32 swordSwingSpeed;
-	float swordSwingSpeedFloat;
-
-	float swordSwingSpeedMultLow;
-	float swordSwingSpeedMultHigh;
-
 
 	void CalculateStats();
 	
