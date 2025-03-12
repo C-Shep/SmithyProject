@@ -215,6 +215,9 @@ public:
 
 	//------------ Statistics ------------
 	float bladeVolume;
+	float guardVolume;
+	float gripVolume;
+	float pommelVolume;
 
 	//Damage
 	UPROPERTY(BlueprintReadOnly,EditAnywhere) 
@@ -239,22 +242,28 @@ public:
 	float swordDefenceMultHigh;
 
 	//Weight
+	float swordWeight;
+
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	int32 swordWeight;
+	FString swordWeightString;
 
 	float swordWeightMultLow;
 	float swordWeightMultHigh;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	FString weightClassString;
 
 	//Durability
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	int32 swordDurability;
 
 	float swordDurabilityMultLow;
-	float swordurabilityMultHigh;
+	float swordDurabilityMultHigh;
 
 	//Name
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	FString swordName;
+	float swordDurabilityFloat;
 
 	void CalculateStats();
 	

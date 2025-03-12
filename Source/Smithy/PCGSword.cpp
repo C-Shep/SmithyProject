@@ -82,6 +82,15 @@ APCGSword::APCGSword()
 
 	swordSwingSpeedMultLow = 0.9;
 	swordSwingSpeedMultHigh = 1.1;
+
+	swordDefenceMultLow = 0.9;
+	swordDefenceMultHigh = 1.1;
+
+	swordWeightMultLow = 0.9;
+	swordWeightMultHigh = 1.1;
+
+	swordDurabilityMultLow = 0.9;
+	swordDurabilityMultHigh = 1.1;
 }
 
 void APCGSword::SetBladeAttributes(float newMinBladeH, float newMaxBladeH, float newMinBladeW, float newMaxBladeW, float newGuardMulti, float newMinGuardW, float newMaxGuardW, float newMinGripH, float newMaxGripH, float newMinPommelSize, float newMaxPommelSize, int newBladeType, float newCurve)
@@ -294,7 +303,7 @@ void APCGSword::GenerateMesh()
 	float matBladeScale = FMath::RandRange(-0.05f, 0.05f);
 	blade->SetRelativeScale3D(FVector(girth, width, 1.f));
 
-	//Calculate blade volume, make the cube radius matter more cuz its a smaller number than the hight
+	//Calculate blade volume, make the cube radius matter more cuz its a smaller number than the height
 	bladeVolume = (bladeCubeRadius.X * 1.2) * (bladeCubeRadius.Y * 1.2) * randHeight;
 
 	//------------------------------ Generate Guard Mesh, Modify it ------------------------------
@@ -312,6 +321,9 @@ void APCGSword::GenerateMesh()
 	guard->SetRelativeScale3D(FVector(1.f + matGuardScale, 2.f + matGuardScale, 1.f + matGuardScale));
 	guard->SetWorldLocation(blade->GetComponentLocation() - (FVector(0.f,0.f, (bladeCubeRadius.Z + guardCubeRadius.Z))));
 
+	//Calculate guard volume
+	guardVolume = guardCubeRadius.X * guardCubeRadius.Y * guardCubeRadius.Z;
+
 	//------------------------------ Generate Grip Mesh, Modify it ------------------------------
 	GenerateGrip();
 	
@@ -322,6 +334,9 @@ void APCGSword::GenerateMesh()
 	grip->SetRelativeScale3D(FVector(0.9f+ matGripScale, 0.8f + matGripScale, 1.f));
 	grip->SetWorldLocation(guard->GetComponentLocation() - (FVector(0.f, 0.f, (guardCubeRadius.Z + gripCubeRadius.Z))));
 
+	//Calculate grip volume
+	gripVolume = gripCubeRadius.X * gripCubeRadius.Y * gripCubeRadius.Z;
+
 	//------------------------------ Generate Pommel Mesh, Modify it ------------------------------
 	GeneratePommel();
 
@@ -329,6 +344,9 @@ void APCGSword::GenerateMesh()
 
 	pommel->SetRelativeScale3D(FVector(1.3f, 1.3f, 1.f));
 	pommel->SetWorldLocation(grip->GetComponentLocation() - (FVector(0.f, 0.f, (gripCubeRadius.Z + pommelCubeRadius.Z))));
+
+	//Calculate pommel volume
+	pommelVolume = pommelCubeRadius.X * pommelCubeRadius.Y * pommelCubeRadius.Z;
 
 	//------------------------------ Generate Tip Mesh, Modify it ------------------------------
 	tip->SetActive(true);
@@ -802,7 +820,6 @@ void APCGSword::CalculateStats()
 	float randomDamageMult = FMath::RandRange(swordDamageMultLow, swordDamageMultHigh);
 
 	const int32 baseDamage = 10;
-	const int32 standardSize = 25;
 	const float damagePower = 0.5;
 
 	swordDamage = (baseDamage + pow(bladeVolume, damagePower)) * randomDamageMult;
@@ -813,7 +830,48 @@ void APCGSword::CalculateStats()
 	const int32 baseSwing = 1;
 	const float swingPower = 0.2;
 
-	swordSwingSpeedFloat = baseSwing / pow((bladeVolume),swingPower) * randomSwingMult;
+	swordSwingSpeedFloat = baseSwing / pow(bladeVolume,swingPower) * randomSwingMult;
 	swordSwingSpeedFloat = swordSwingSpeedFloat *100.f;
 	swordSwingSpeed = swordSwingSpeedFloat;
+
+	//Defence Calculations
+	float randomDefMult = FMath::RandRange(swordDefenceMultLow, swordDefenceMultHigh);
+
+	const int32 baseDef = 4;
+	const float defPower = 0.5;
+
+	swordDefence = (baseDef + pow(guardVolume, defPower)) * randomDefMult;
+
+	//Weight Calculations (The weight is actually the mass of the sword, just calling it weight for simplicities sake)
+	float randomWeightMult = FMath::RandRange(swordWeightMultLow, swordWeightMultHigh);
+
+	const float baseWeight = 68000.f;
+	const float weightPower = 1.1;
+
+	float bladeLowVol = pow(bladeVolume, weightPower);
+
+	swordWeight = ((baseWeight + bladeLowVol + guardVolume*2.f + gripVolume * 2.f + pommelVolume * 2.f) * randomWeightMult)/45300.f;
+	swordWeightString = FString::Printf(TEXT("%.2f"),swordWeight);
+	swordWeightString += "lb";
+
+	if (swordWeight > 8.f)
+	{
+		weightClassString = "Heavy";
+	}
+	else if (swordWeight > 3.f)
+	{
+		weightClassString = "Medium";
+	}
+	else {
+		weightClassString = "Light";
+	}
+
+	//Durability Calculations
+	float randomDurabilityMult = FMath::RandRange(swordDurabilityMultLow, swordDurabilityMultHigh);
+
+	const int32 baseDurability = 100;
+	const float durabilityPower = 0.5;
+
+	swordDurabilityFloat = (baseDurability + (pow(bladeVolume, durabilityPower) / 10.f) + pow(gripVolume, durabilityPower) + pommelVolume) * randomDurabilityMult;
+	swordDurability = swordDurabilityFloat;
 }
