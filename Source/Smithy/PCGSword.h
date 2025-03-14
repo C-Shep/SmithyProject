@@ -28,7 +28,6 @@ public:
 	virtual void PostLoad() override;
 
 	//Size of the blade
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector bladeCubeRadius;
 	float width;
 	float girth;
@@ -49,23 +48,18 @@ public:
 
 	//------ Grip Variables ------
 	//Size of Grip
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector gripCubeRadius;
 
 	//------ Pommel Variables ------
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector pommelCubeRadius;
 
 	//------ Tip Variables ------
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector tipCubeRadius;
 
 	//------ Prism Variables ------
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector prismCubeRadius;
 
 	//------ Curve Variables ------
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector curveCubeRadius;
 
 	//Default Attributes
@@ -132,15 +126,6 @@ public:
 	TArray<TArray<FLinearColor>> curveVertexColors;
 	TArray<TArray<FProcMeshTangent>> curveTangents;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	TArray<FVector> combinedCurveVertices;
-
-	TArray<int> combinedCurveTriangles;
-	TArray<FVector> combinedCurveNormals;
-	TArray<FVector2D> combinedCurveUvs;
-	TArray<FLinearColor> combinedCurveVertexColors;
-	TArray<FProcMeshTangent> combinedCurveTangents;
-
 	//Generate each section of the sword, somewhat of a main function
 	void GenerateMesh();
 
@@ -165,14 +150,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UProceduralMeshComponent* blade;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UProceduralMeshComponent* guard;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UProceduralMeshComponent* grip;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UProceduralMeshComponent* pommel;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UProceduralMeshComponent* tip;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UProceduralMeshComponent* prismBlade;
 
 	void AddTriangleMesh(FVector topRight, FVector bottomRight, FVector bottomLeft, int32& triIndex, FProcMeshTangent tangent);
@@ -256,6 +246,7 @@ public:
 	//Durability
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	int32 swordDurability;
+	float swordDurabilityFloat;
 
 	float swordDurabilityMultLow;
 	float swordDurabilityMultHigh;
@@ -263,8 +254,13 @@ public:
 	//Name
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	FString swordName;
-	float swordDurabilityFloat;
+
+	TArray<FString> prefixes;
+	TArray<FString> lightNames;
+	TArray<FString> mediumNames;
+	TArray<FString> heavyNames;
+
+	void FillNames();
 
 	void CalculateStats();
-	
 };

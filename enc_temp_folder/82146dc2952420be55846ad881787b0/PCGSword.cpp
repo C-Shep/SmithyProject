@@ -625,7 +625,7 @@ void APCGSword::GenerateCurvedBlade()
 	FVector controlPoints[4] = {
 		FVector(0.f,		0.f,		-randHeight),
 		FVector(0.f,		0.f,		-randHeight/2),
-		FVector(curveAmount/4,		0.f,		randHeight/2),
+		FVector(0.f,		0.f,		randHeight/2),
 		FVector(curveAmount,		 0.f,		randHeight)
 	};
 
