@@ -18,7 +18,7 @@ APlayerCharacter::APlayerCharacter()
 	cameraArm->TargetArmLength = 200;
 
 	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	camera->SetupAttachment(RootComponent);
+	camera->SetupAttachment(cameraArm);
 	camera->SetRelativeLocation(FVector(0.f, 0.f, 50.f)); // Position the camera
 	camera->bUsePawnControlRotation = true;
 

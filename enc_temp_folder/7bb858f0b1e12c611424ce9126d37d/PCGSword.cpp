@@ -258,13 +258,12 @@ void APCGSword::GenerateMesh()
 	if (bladeType == 0 || bladeType == 1)
 	{
 		blade->CreateMeshSection_LinearColor(0, bladeVertices, bladeTriangles, bladeNormals, bladeUvs, bladeVertexColors, bladeTangents, true);
-		blade->SetWorldRotation(FRotator(0.f, 0.f, 0.f));	
+		blade->SetWorldRotation(FRotator(0.f, 90.f, 0.f));	
 	}
 
 	if (bladeType == 1)
 	{
 		blade->CreateMeshSection_LinearColor(0, bladeVertices, bladeTriangles, bladeNormals, bladeUvs, bladeVertexColors, bladeTangents, true);
-		width = width / 4;
 		blade->SetWorldRotation(FRotator(0.f, 0.f, 0.f));
 	}
 
@@ -285,10 +284,11 @@ void APCGSword::GenerateMesh()
 			);
 		}
 		blade->SetWorldRotation(FRotator(0.f, 0.f, 0.f));
+		blade->SetRelativeScale3D(FVector(width, girth, 1.f));
 	}
 
 	float matBladeScale = FMath::RandRange(-0.05f, 0.05f);
-	blade->SetRelativeScale3D(FVector(girth, width/4, 1.f));
+	blade->SetRelativeScale3D(FVector(girth, width, 1.f));
 
 	//Calculate blade volume, make the cube radius matter more cuz its a smaller number than the height
 	bladeVolume = (bladeCubeRadius.X * 1.2) * (bladeCubeRadius.Y * 1.2) * randHeight;
