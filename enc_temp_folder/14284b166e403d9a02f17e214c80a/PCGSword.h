@@ -28,7 +28,6 @@ public:
 	virtual void PostLoad() override;
 
 	//Size of the blade
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector bladeCubeRadius;
 	float width;
 	float girth;
@@ -49,7 +48,6 @@ public:
 
 	//------ Grip Variables ------
 	//Size of Grip
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector gripCubeRadius;
 
 	//------ Pommel Variables ------
