@@ -20,11 +20,7 @@ ADummy::ADummy()
 
 void ADummy::TakeDamage(int32 damage)
 {
-	float tenPercentDamage = ceilf(damage * 0.1);
-
-	int32 extraDmg = FMath::RandRange(-tenPercentDamage, tenPercentDamage);
-
-	dummyHp -= (damage + extraDmg);
+	dummyHp -= damage;
 
 	if (dummyHp<=0)
 	{
