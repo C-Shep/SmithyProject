@@ -31,7 +31,16 @@ public:
 	int dummyHp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int dummyHpMax;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USceneComponent* sceneComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool dead;
+
+	float deadTimer;
+	float deadTimerMax;
 
 	bool canBeHit;
 };

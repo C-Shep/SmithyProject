@@ -246,7 +246,7 @@ public:
 	FString weightClassString;
 
 	//Durability
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	int32 swordDurability;
 	float swordDurabilityFloat;
 

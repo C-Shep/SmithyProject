@@ -13,9 +13,14 @@ ADummy::ADummy()
 	sceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
 	RootComponent = sceneComponent;
 
-	dummyHp = 100;
+	dummyHp = 1000;
+	dummyHpMax = 1000;
 
 	canBeHit = true;
+
+	dead = false;
+	deadTimer = -1;
+	deadTimerMax = 3.f;
 }
 
 void ADummy::TakeDamage(int32 damage)
@@ -28,7 +33,8 @@ void ADummy::TakeDamage(int32 damage)
 
 	if (dummyHp<=0)
 	{
-		this->Destroy();
+		dead = true;
+		deadTimer = deadTimerMax;
 	}
 }
 
@@ -44,6 +50,17 @@ void ADummy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (dead)
+	{
+		if (deadTimer > 0.f)
+		{
+			deadTimer -= DeltaTime;
+		}
+		else {
+			dummyHp = dummyHpMax;
+			dead = false;
+		}
+	}
 }
 
 

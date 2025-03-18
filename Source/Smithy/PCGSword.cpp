@@ -804,10 +804,10 @@ void APCGSword::AddQuadMesh(FVector topLeft, FVector bottomLeft, FVector topRigh
 
 void APCGSword::FillNames()
 {
-	prefixes = TArray<FString>{"The", "Great", "Hero's", "Mighty", "Legendary", "Cursed", "Oh, Mighty" };
+	prefixes = TArray<FString>{"The", "Great", "Hero's", "Mighty", "Legendary", "Cursed", "Oh, Mighty", "The Great", "Ol'"};
 	lightNames = TArray<FString>{ "Dagger", "Stabber", "Needleblade", "Needle", "Lightsword", "Fang", "Piercer" , "Gobslayer" };
 	mediumNames = TArray<FString>{ "Slasher", "Slicer", "Blade", "Sabre", "Claymore", "Starsword", "Doomsword", "Wyrmslayer" };
-	heavyNames = TArray<FString>{ "Crusher", "Slayer", "Throngler", "Masher", "Dragonslayer", "Destroyer", "Slab" };
+	heavyNames = TArray<FString>{ "Crusher", "Slayer", "Throngler", "Masher", "Dragonslayer", "Destroyer", "Slab", "Wrecker"};
 }
 
 void APCGSword::CalculateStats()
@@ -846,6 +846,7 @@ void APCGSword::CalculateStats()
 
 	swordDurabilityFloat = (baseDurability + (pow(bladeVolume, durabilityPower) / 10.f) + pow(gripVolume, durabilityPower) + pommelVolume) * randomDurabilityMult;
 	swordDurability = swordDurabilityFloat;
+	swordDurabilityMax = swordDurability;
 
 	//Weight Calculations (The weight is actually the mass of the sword, just calling it weight for simplicities sake)
 	float randomWeightMult = FMath::RandRange(swordWeightMultLow, swordWeightMultHigh);
@@ -865,6 +866,7 @@ void APCGSword::CalculateStats()
 	{
 		weightClassString = "Heavy";
 		prefixes.Add("Big");
+		prefixes.Add("Mega");
 		swordNameWeightArray = heavyNames;
 	}
 	else if (swordWeight > 3.f)
@@ -875,6 +877,8 @@ void APCGSword::CalculateStats()
 	else {
 		weightClassString = "Light";
 		prefixes.Add("Lil");
+		prefixes.Add("Wee");
+		prefixes.Add("Little");
 		swordNameWeightArray = lightNames;
 	}
 
