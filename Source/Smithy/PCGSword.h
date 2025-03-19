@@ -169,7 +169,7 @@ public:
 
 	void AddTriangleMesh(FVector topRight, FVector bottomRight, FVector bottomLeft, int32& triIndex, FProcMeshTangent tangent);
 	void AddQuadMesh(FVector topRight, FVector bottomRight, FVector topLeft, FVector bottomLeft, int32& triIndex, FProcMeshTangent tangent);
-	void SetBladeAttributes(float newMinBladeH, float newMaxBladeH, float newMinBladeW, float newMaxBladeW, float newGuardMulti, float newMinGuardW, float newMaxGuardW, float newMinGripH, float newMaxGripH, float newMinPommelSize, float newMaxPommelSize, int newBladeType, float newCurve);
+	void SetBladeAttributes(float newMinBladeH, float newMaxBladeH, float newMinBladeW, float newMaxBladeW, float newGuardMulti, float newMinGuardW, float newMaxGuardW, float newMinGripH, float newMaxGripH, float newMinPommelSize, float newMaxPommelSize, int newBladeType, float newCurve, int newMatType);
 
 	//Blade Height
 	float heightMin;
@@ -205,6 +205,14 @@ public:
 	UPROPERTY(EditAnywhere)
 	float randCubeSize;
 
+	//------------ Material ------------
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	int32 matType;
+
+	float steelMod;
+	float ironMod;
+	float copperMod;
+
 	//------------ Statistics ------------
 	float bladeVolume;
 	float guardVolume;
@@ -212,14 +220,14 @@ public:
 	float pommelVolume;
 
 	//Damage
-	UPROPERTY(BlueprintReadOnly,EditAnywhere) 
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	int32 swordDamage;
 
 	float swordDamageMultLow;
 	float swordDamageMultHigh;
 
 	//Swing Speed
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 swordSwingSpeed;
 	float swordSwingSpeedFloat;
 
@@ -227,7 +235,7 @@ public:
 	float swordSwingSpeedMultHigh;
 
 	//Defence/Parry
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 swordDefence;
 
 	float swordDefenceMultLow;
@@ -236,13 +244,13 @@ public:
 	//Weight
 	float swordWeight;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FString swordWeightString;
 
 	float swordWeightMultLow;
 	float swordWeightMultHigh;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FString weightClassString;
 
 	//Durability
@@ -250,14 +258,14 @@ public:
 	int32 swordDurability;
 	float swordDurabilityFloat;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 swordDurabilityMax;
 
 	float swordDurabilityMultLow;
 	float swordDurabilityMultHigh;
 
 	//Name
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FString swordName;
 
 	TArray<FString> prefixes;
@@ -268,4 +276,20 @@ public:
 	void FillNames();
 
 	void CalculateStats();
+
+	//Getters/Setters for Stats
+	UFUNCTION(BlueprintCallable) void SetDurability(int32 newDurability);
+	UFUNCTION(BlueprintCallable) int32 GetDamage();
+	UFUNCTION(BlueprintCallable) int32 GetDurability();
+	UFUNCTION(BlueprintCallable) int32 GetSwingSpeed();
+	UFUNCTION(BlueprintCallable) int32 GetMaxDurability();
+	UFUNCTION(BlueprintCallable) FString GetWeight();
+	UFUNCTION(BlueprintCallable) FString GetWeightClass();
+	UFUNCTION(BlueprintCallable) FString GetName();
+	UFUNCTION(BlueprintCallable) int32 GetMatType();
+
+	//Getters/Setters for Mesh Parts and Sizes
+	UFUNCTION(BlueprintCallable) FVector GetBladeCube();
+	UFUNCTION(BlueprintCallable) FVector GetGuardCube();
+	UFUNCTION(BlueprintCallable) FVector GetGripCube();
 };

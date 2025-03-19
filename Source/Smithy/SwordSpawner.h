@@ -63,6 +63,9 @@ public:
 	int bladeType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 matType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float curveSizeSlider;
 
 	AActor* spawnedSword;

@@ -71,16 +71,20 @@ APCGSword::APCGSword()
 	swordDefenceMultLow = 0.9;
 	swordDefenceMultHigh = 1.1;
 
-	swordWeightMultLow = 0.9;
-	swordWeightMultHigh = 1.1;
+	swordWeightMultLow = 0.8;
+	swordWeightMultHigh = 1.0;
 
 	swordDurabilityMultLow = 0.9;
 	swordDurabilityMultHigh = 1.1;
 
+	steelMod = 0.7;
+	ironMod = 0.9;
+	copperMod = 1.1;
+
 	FillNames();
 }
 
-void APCGSword::SetBladeAttributes(float newMinBladeH, float newMaxBladeH, float newMinBladeW, float newMaxBladeW, float newGuardMulti, float newMinGuardW, float newMaxGuardW, float newMinGripH, float newMaxGripH, float newMinPommelSize, float newMaxPommelSize, int newBladeType, float newCurve)
+void APCGSword::SetBladeAttributes(float newMinBladeH, float newMaxBladeH, float newMinBladeW, float newMaxBladeW, float newGuardMulti, float newMinGuardW, float newMaxGuardW, float newMinGripH, float newMaxGripH, float newMinPommelSize, float newMaxPommelSize, int newBladeType, float newCurve, int newMatType)
 {
 	//Blade H
 	heightMin = newMinBladeH;
@@ -109,6 +113,9 @@ void APCGSword::SetBladeAttributes(float newMinBladeH, float newMaxBladeH, float
 
 	//Curve
 	curveAmount = newCurve;
+
+	//Mat Type
+	matType = newMatType;
 }
 
 // Called when the game starts or when spawned
@@ -844,7 +851,7 @@ void APCGSword::CalculateStats()
 	const int32 baseDurability = 100;
 	const float durabilityPower = 0.5;
 
-	swordDurabilityFloat = (baseDurability + (pow(bladeVolume, durabilityPower) / 10.f) + pow(gripVolume, durabilityPower) + pommelVolume) * randomDurabilityMult;
+	swordDurabilityFloat = (baseDurability + (pow(bladeVolume, durabilityPower) / 10.f) + pow(gripVolume, durabilityPower) + (pommelVolume/3.f)) * randomDurabilityMult;
 	swordDurability = swordDurabilityFloat;
 	swordDurabilityMax = swordDurability;
 
@@ -855,8 +862,33 @@ void APCGSword::CalculateStats()
 	const float weightPower = 1.1;
 
 	float bladeLowVol = pow(bladeVolume, weightPower);
+	float materialMod = 1.f;
+	switch (matType)
+	{
+	case 0:
+		materialMod = steelMod;
+		prefixes.Add("Steel");
+		prefixes.Add("Stainless Steel");
+		prefixes.Add("Sheffield Steel");
+		prefixes.Add("Perfect");
+		break;
+	case 1:
+		materialMod = ironMod;
+		prefixes.Add("Iron");
+		prefixes.Add("Cast Iron");
+		prefixes.Add("Rusted");
+		prefixes.Add("Unalloyed");
+		break;
+	case 2:
+		materialMod = copperMod;
+		prefixes.Add("Copper");
+		break;
+	default:
+		materialMod = steelMod;
+		break;
+	}
 
-	swordWeight = ((baseWeight + bladeLowVol + guardVolume * 2.f + gripVolume * 2.f + pommelVolume * 2.f) * randomWeightMult) / 45300.f;
+	swordWeight = (((baseWeight + bladeLowVol + guardVolume * 2.f + gripVolume * 2.f + pommelVolume * 2.f) * randomWeightMult) * materialMod) / 45300.f;
 	swordWeightString = FString::Printf(TEXT("%.2f"), swordWeight);
 	swordWeightString += "lb";
 
@@ -890,4 +922,64 @@ void APCGSword::CalculateStats()
 	FString chosenWeightName = swordNameWeightArray[swordNameNum];
 
 	swordName = chosenPrefix + " " + chosenWeightName;
+}
+
+void APCGSword::SetDurability(int32 newDurability)
+{
+	swordDurability = newDurability;
+}
+
+int32 APCGSword::GetDamage()
+{
+	return swordDamage;
+}
+
+int32 APCGSword::GetDurability()
+{
+	return swordDurability;
+}
+
+int32 APCGSword::GetSwingSpeed()
+{
+	return swordSwingSpeed;
+}
+
+int32 APCGSword::GetMaxDurability()
+{
+	return swordDurabilityMax;
+}
+
+FString APCGSword::GetWeight()
+{
+	return swordWeightString;
+}
+
+FString APCGSword::GetWeightClass()
+{
+	return weightClassString;
+}
+
+FString APCGSword::GetName()
+{
+	return swordName;
+}
+
+int32 APCGSword::GetMatType()
+{
+	return matType;
+}
+
+FVector APCGSword::GetBladeCube()
+{
+	return bladeCubeRadius;
+}
+
+FVector APCGSword::GetGuardCube()
+{
+	return guardCubeRadius;
+}
+
+FVector APCGSword::GetGripCube()
+{
+	return gripCubeRadius;
 }
