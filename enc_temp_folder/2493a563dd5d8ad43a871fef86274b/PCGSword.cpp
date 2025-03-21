@@ -55,31 +55,31 @@ APCGSword::APCGSword()
 	//Y = forward and back	(Girth)
 	//Z = height			(Height)
 
-	guardGirthMultiMin = 0.6f;
+	guardGirthMultiMin = 0.6;
 	guardGirthMultiMax = 1.f;
 
-	guardWidthMultiMin = 0.8f;
-	guardWidthMultiMin = 1.5f;
+	guardWidthMultiMin = 0.8;
+	guardWidthMultiMin = 1.5;
 
 	//Random Stat 
-	swordDamageMultLow = 0.9f;
-	swordDamageMultHigh = 1.1f;
+	swordDamageMultLow = 0.9;
+	swordDamageMultHigh = 1.1;
 
-	swordSwingSpeedMultLow = 0.9f;
-	swordSwingSpeedMultHigh = 1.1f;
+	swordSwingSpeedMultLow = 0.9;
+	swordSwingSpeedMultHigh = 1.1;
 
-	swordDefenceMultLow = 0.9f;
-	swordDefenceMultHigh = 1.1f;
+	swordDefenceMultLow = 0.9;
+	swordDefenceMultHigh = 1.1;
 
-	swordWeightMultLow = 0.8f;
-	swordWeightMultHigh = 1.0f;
+	swordWeightMultLow = 0.8;
+	swordWeightMultHigh = 1.0;
 
-	swordDurabilityMultLow = 1.0f;
-	swordDurabilityMultHigh = 1.5f;
+	swordDurabilityMultLow = 0.9;
+	swordDurabilityMultHigh = 1.1;
 
-	steelMod = 0.5f;
-	ironMod = 0.7f;
-	copperMod = 0.9f;
+	steelMod = 0.7;
+	ironMod = 0.9;
+	copperMod = 1.1;
 
 	FillNames();
 }
@@ -849,11 +849,9 @@ void APCGSword::CalculateStats()
 	float randomDurabilityMult = FMath::RandRange(swordDurabilityMultLow, swordDurabilityMultHigh);
 
 	const int32 baseDurability = 100;
-	const float durabilityPower = 0.6;
+	const float durabilityPower = 0.5;
 
-	float sizeBladeDurability = baseDurability / pow(bladeVolume, durabilityPower);
-
-	swordDurabilityFloat = (baseDurability + (sizeBladeDurability * 100.f) + pow(gripVolume, durabilityPower) + pow(gripVolume, durabilityPower)) * randomDurabilityMult;
+	swordDurabilityFloat = (baseDurability + (pow(bladeVolume, durabilityPower) / 10.f) + pow(gripVolume, durabilityPower) + (pommelVolume/3.f)) * randomDurabilityMult;
 	swordDurability = swordDurabilityFloat;
 	swordDurabilityMax = swordDurability;
 
@@ -913,7 +911,6 @@ void APCGSword::CalculateStats()
 		prefixes.Add("Lil");
 		prefixes.Add("Wee");
 		prefixes.Add("Little");
-		prefixes.Add("The Little");
 		swordNameWeightArray = lightNames;
 	}
 
