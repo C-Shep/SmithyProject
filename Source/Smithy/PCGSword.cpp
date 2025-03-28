@@ -788,10 +788,10 @@ void APCGSword::AddQuadMesh(FVector topLeft, FVector bottomLeft, FVector topRigh
 	triangles.Add(point3);
 	triangles.Add(point2);
 
-	//normals cross product
+	//normals cross product, gets the perpendicular vector for normal
 	FVector thisNorm = FVector::CrossProduct(topLeft - bottomRight, topLeft - topRight).GetSafeNormal();
 
-	//normals, tangent and colour
+	//set normals, tangent and colour for each point
 	//4 for quad
 	for (int i = 0; i < 4; i++)
 	{
@@ -801,7 +801,6 @@ void APCGSword::AddQuadMesh(FVector topLeft, FVector bottomLeft, FVector topRigh
 	}
 
 	//uvs
-	//some uvs are upside down i gotta fix this
 	uvs.Add(FVector2D(0.0f, 1.0f));//Top Left
 	uvs.Add(FVector2D(0.0f, 0.0f));//Bottom Left
 	uvs.Add(FVector2D(1.0f, 1.0f));//Top Right
