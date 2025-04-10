@@ -852,7 +852,7 @@ void APCGSword::CalculateStats()
 
 	float sizeBladeDurability = baseDurability / pow(bladeVolume, durabilityPower);
 
-	swordDurabilityFloat = (baseDurability + (sizeBladeDurability * 100.f) + pow(gripVolume, durabilityPower) + pow(gripVolume, durabilityPower)) * randomDurabilityMult;
+	swordDurabilityFloat = (baseDurability + (sizeBladeDurability * 100.f) + pow(gripVolume, durabilityPower) + pow(pommelVolume, durabilityPower)) * randomDurabilityMult;
 	swordDurability = swordDurabilityFloat;
 	swordDurabilityMax = swordDurability;
 
