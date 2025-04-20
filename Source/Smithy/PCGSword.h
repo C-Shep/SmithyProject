@@ -278,14 +278,6 @@ public:
 	void CalculateStats();
 
 	//Getters/Setters for Stats
-	UFUNCTION(BlueprintCallable) void SetDurability(int32 newDurability);
-	UFUNCTION(BlueprintCallable) int32 GetDamage();
-	UFUNCTION(BlueprintCallable) int32 GetDurability();
-	UFUNCTION(BlueprintCallable) int32 GetSwingSpeed();
-	UFUNCTION(BlueprintCallable) int32 GetMaxDurability();
-	UFUNCTION(BlueprintCallable) FString GetWeight();
-	UFUNCTION(BlueprintCallable) FString GetWeightClass();
-	UFUNCTION(BlueprintCallable) FString GetName();
 	UFUNCTION(BlueprintCallable) int32 GetMatType();
 
 	//Getters/Setters for Mesh Parts and Sizes

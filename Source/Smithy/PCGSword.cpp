@@ -859,7 +859,7 @@ void APCGSword::CalculateStats()
 	//Weight Calculations (The weight is actually the mass of the sword, just calling it weight for simplicities sake)
 	float randomWeightMult = FMath::RandRange(swordWeightMultLow, swordWeightMultHigh);
 
-	const float baseWeight = 68000.f;
+	const float baseWeight = 68000.f;	//half of average sword weight in g , * 100 cuz of unreal units
 	const float weightPower = 1.1;
 
 	float bladeLowVol = pow(bladeVolume, weightPower);
@@ -924,46 +924,6 @@ void APCGSword::CalculateStats()
 	FString chosenWeightName = swordNameWeightArray[swordNameNum];
 
 	swordName = chosenPrefix + " " + chosenWeightName;
-}
-
-void APCGSword::SetDurability(int32 newDurability)
-{
-	swordDurability = newDurability;
-}
-
-int32 APCGSword::GetDamage()
-{
-	return swordDamage;
-}
-
-int32 APCGSword::GetDurability()
-{
-	return swordDurability;
-}
-
-int32 APCGSword::GetSwingSpeed()
-{
-	return swordSwingSpeed;
-}
-
-int32 APCGSword::GetMaxDurability()
-{
-	return swordDurabilityMax;
-}
-
-FString APCGSword::GetWeight()
-{
-	return swordWeightString;
-}
-
-FString APCGSword::GetWeightClass()
-{
-	return weightClassString;
-}
-
-FString APCGSword::GetName()
-{
-	return swordName;
 }
 
 int32 APCGSword::GetMatType()
