@@ -196,6 +196,7 @@ public:
 	float pommelWidthMax;
 
 	//Blade Type
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int bladeType;
 
 	//Curve
@@ -212,6 +213,13 @@ public:
 	float steelMod;
 	float ironMod;
 	float copperMod;
+	float fireMod;
+	float iceMod;
+	float darkMod;
+
+	float damageMod;
+	float speedMod;
+	float duraMod;
 
 	//------------ Statistics ------------
 	float bladeVolume;

@@ -80,6 +80,13 @@ APCGSword::APCGSword()
 	steelMod = 0.5f;
 	ironMod = 0.7f;
 	copperMod = 0.9f;
+	fireMod = 0.5f;
+	iceMod = 0.5f;
+	darkMod = 0.9f;
+
+	damageMod = 1.f;
+	speedMod = 1.f;
+	duraMod = 1.f;
 
 	FillNames();
 }
@@ -818,13 +825,84 @@ void APCGSword::FillNames()
 
 void APCGSword::CalculateStats()
 {
+	float materialMod = 1.f;
+	switch (matType)
+	{
+	case 0:
+		materialMod = steelMod;
+		damageMod = 1.f;
+		speedMod = 1.f;
+		duraMod = 1.f;
+		prefixes.Add("Steel");
+		prefixes.Add("Stainless Steel");
+		prefixes.Add("Sheffield Steel");
+		prefixes.Add("Perfect");
+		break;
+	case 1:
+		materialMod = ironMod;
+		damageMod = 1.1f;
+		speedMod = 0.9f;
+		duraMod = 1.f;
+		prefixes.Add("Iron");
+		prefixes.Add("Cast Iron");
+		prefixes.Add("Rusted");
+		prefixes.Add("Unalloyed");
+		break;
+	case 2:
+		materialMod = copperMod;
+		damageMod = 1.1f;
+		speedMod = 0.8f;
+		duraMod = 1.1f;
+		prefixes.Add("Copper");
+		break;
+	case 3:
+		materialMod = fireMod;
+		damageMod = 1.3f;
+		speedMod = 0.9f;
+		duraMod = 0.8f;
+		prefixes.Add("Flaming");
+		prefixes.Add("Inferno");
+		prefixes.Add("Hot");
+		prefixes.Add("Extra Hot");
+		prefixes.Add("Burning");
+		prefixes.Add("Fiery");
+		break;
+	case 4:
+		materialMod = iceMod;
+		damageMod = 1.2f;
+		speedMod = 1.2f;
+		duraMod = 0.1f;
+		prefixes.Add("Frozen");
+		prefixes.Add("Cold");
+		prefixes.Add("Icy");
+		prefixes.Add("The Cold");
+		prefixes.Add("Arctic");
+		prefixes.Add("Sub-Zero");
+		break;
+	case 5:
+		materialMod = darkMod;
+		damageMod = 1.3f;
+		speedMod = 0.7f;
+		duraMod = 0.9f;
+		prefixes.Add("Evil");
+		prefixes.Add("Dark");
+		prefixes.Add("Ominous");
+		prefixes.Add("The Evil");
+		prefixes.Add("Umbral");
+		prefixes.Add("Shadow");
+		break;
+	default:
+		materialMod = steelMod;
+		break;
+	}
+
 	//Damage Calculation
 	float randomDamageMult = FMath::RandRange(swordDamageMultLow, swordDamageMultHigh);
 
-	const int32 baseDamage = 10;
+	const int32 baseDamage = 50;
 	const float damagePower = 0.5;
 
-	swordDamage = (baseDamage + pow(bladeVolume, damagePower)) * randomDamageMult;
+	swordDamage = (baseDamage + pow(bladeVolume, damagePower)) * randomDamageMult * damageMod;
 
 	//Swing Speed Calculation
 	float randomSwingMult = FMath::RandRange(swordSwingSpeedMultLow, swordSwingSpeedMultHigh);
@@ -832,7 +910,7 @@ void APCGSword::CalculateStats()
 	const int32 baseSwing = 1;
 	const float swingPower = 0.2;
 
-	swordSwingSpeedFloat = baseSwing / pow(bladeVolume,swingPower) * randomSwingMult;
+	swordSwingSpeedFloat = baseSwing / pow(bladeVolume,swingPower) * randomSwingMult * speedMod;
 	swordSwingSpeedFloat = swordSwingSpeedFloat *100.f;
 	swordSwingSpeed = swordSwingSpeedFloat;
 
@@ -852,7 +930,7 @@ void APCGSword::CalculateStats()
 
 	float sizeBladeDurability = baseDurability / pow(bladeVolume, durabilityPower);
 
-	swordDurabilityFloat = (baseDurability + (sizeBladeDurability * 100.f) + pow(gripVolume, durabilityPower) + pow(pommelVolume, durabilityPower)) * randomDurabilityMult;
+	swordDurabilityFloat = (baseDurability + (sizeBladeDurability * 100.f) + pow(gripVolume, durabilityPower) + pow(pommelVolume, durabilityPower)) * randomDurabilityMult * duraMod;
 	swordDurability = swordDurabilityFloat;
 	swordDurabilityMax = swordDurability;
 
@@ -863,31 +941,7 @@ void APCGSword::CalculateStats()
 	const float weightPower = 1.1;
 
 	float bladeLowVol = pow(bladeVolume, weightPower);
-	float materialMod = 1.f;
-	switch (matType)
-	{
-	case 0:
-		materialMod = steelMod;
-		prefixes.Add("Steel");
-		prefixes.Add("Stainless Steel");
-		prefixes.Add("Sheffield Steel");
-		prefixes.Add("Perfect");
-		break;
-	case 1:
-		materialMod = ironMod;
-		prefixes.Add("Iron");
-		prefixes.Add("Cast Iron");
-		prefixes.Add("Rusted");
-		prefixes.Add("Unalloyed");
-		break;
-	case 2:
-		materialMod = copperMod;
-		prefixes.Add("Copper");
-		break;
-	default:
-		materialMod = steelMod;
-		break;
-	}
+
 
 	swordWeight = (((baseWeight + bladeLowVol + guardVolume * 2.f + gripVolume * 2.f + pommelVolume * 2.f) * randomWeightMult) * materialMod) / 45300.f;
 	swordWeightString = FString::Printf(TEXT("%.2f"), swordWeight);
